@@ -17,7 +17,7 @@ public class User {
     private String password;
     private Integer gender;
     private Integer age;
-    private Integer mobile;
+    private String mobile;
     private String nickname;
     private String picture;
     private String description;

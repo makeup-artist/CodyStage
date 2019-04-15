@@ -41,7 +41,7 @@ public class UserInputDTO {
     @ApiModelProperty(value = "手机号码")
     @Pattern(regexp = "^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(17[013678])|(18[0,5-9]))\\d{8}$"
             , message = "手机号格式错误")
-    private Integer mobile;
+    private String mobile;
 
     @ApiModelProperty(value = "昵称")
     @Size(max = 20,message = "昵称过长" )

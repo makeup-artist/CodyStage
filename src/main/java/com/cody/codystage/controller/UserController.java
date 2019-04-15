@@ -35,9 +35,6 @@ public class UserController extends BaseApiService<JSONObject> {
     @PostMapping("/register")
     @ApiOperation(value = "用户注册")
     public BaseResponse<JSONObject> addUser(@Valid UserInputDTO userInputDTO, BindingResult bindingResult){
-        String password=userInputDTO.getPassword();
-        password= MD5Util.MD5(password);
-        userInputDTO.setPassword(password);
         User user= CodyBeanUtils.beanCopyPropertoes(userInputDTO,User.class);
         Integer res = userService.userRegister(user);
         return res>0?setResultSuccess("注册成功"):setResultError("注册失败");
