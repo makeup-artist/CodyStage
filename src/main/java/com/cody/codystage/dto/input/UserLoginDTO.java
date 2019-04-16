@@ -18,7 +18,7 @@ import javax.validation.constraints.Size;
 @ApiModel(value = "用户登陆参数", description = "用户名、号码二选一，目前只支持用户名")
 public class UserLoginDTO {
 
-    @ApiModelProperty(value = "用户名")
+    @ApiModelProperty(value = "用户名",required=true,allowableValues="长度1-20")
     @Size(min = 1,max = 20,message = "用户名长度不符合要求" )
     @NotNull(message = "用户名不能为空")
     private String username;
@@ -28,7 +28,7 @@ public class UserLoginDTO {
 //            , message = "手机号格式错误")
 //    private String mobile;
 
-    @ApiModelProperty(value = "密码")
+    @ApiModelProperty(value = "密码",required=true,allowableValues="长度>6")
     @NotNull(message = "密码不能为空")
     @Size(min = 6,message = "密码长度不符合要求" )
     private String password;

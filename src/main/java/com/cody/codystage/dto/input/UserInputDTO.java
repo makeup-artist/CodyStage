@@ -20,12 +20,12 @@ import javax.validation.constraints.Size;
 @ApiModel(value = "用户信息实体类")
 public class UserInputDTO {
 
-    @ApiModelProperty(value = "用户名")
+    @ApiModelProperty(value = "用户名(长度1-20)",required=true )
     @NotNull(message = "用户名不能为空")
     @Size(min = 1,max = 20,message = "用户名长度不符合要求" )
     private String username;
 
-    @ApiModelProperty(value = "密码")
+    @ApiModelProperty(value = "密码(长度>6)",required=true)
     @NotNull(message = "密码不能为空")
     @Size(min = 6,message = "密码长度不符合要求" )
     private String password;
