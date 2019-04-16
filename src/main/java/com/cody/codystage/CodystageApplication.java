@@ -10,7 +10,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @EnableAsync
 @SpringBootApplication
-@MapperScan(basePackages = "com.cody.codystage.mapper")
+@MapperScan(basePackages = {"com.cody.codystage.mapper"})
 public class CodystageApplication {
 
     public static void main(String[] args) {

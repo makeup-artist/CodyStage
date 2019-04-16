@@ -50,7 +50,7 @@ public class AopLogAspect {
     }
 
     @AfterReturning(returning = "o", pointcut = "serviceAspect()")
-    public void methodAfterReturing(Object o) {
+    public void methodAfterReturning(Object o) {
         JSONObject respJSONObject = new JSONObject();
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("response_time", DateUtil.getCurrentDateStr());
