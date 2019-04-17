@@ -1,6 +1,6 @@
 package com.cody.codystage.service;
 
-import com.cody.codystage.common.constants.Constants;
+import com.cody.codystage.common.constants.ResConstants;
 import com.cody.codystage.entity.User;
 import com.cody.codystage.exception.ServiceException;
 import com.cody.codystage.mapper.UserMapper;
@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 
@@ -46,7 +45,7 @@ public class UserService {
         //检查名称是否重复
         Boolean checkRes = checkUsernameRepeat(user.getUsername());
         if (!checkRes) {
-            throw new ServiceException(Constants.HTTP_RES_CODE_1201, Constants.HTTP_RES_CODE_1201_VALUE);
+            throw new ServiceException(ResConstants.HTTP_RES_CODE_1201, ResConstants.HTTP_RES_CODE_1201_VALUE);
         }
 
         userMapper.register(user);
@@ -62,7 +61,7 @@ public class UserService {
             return Objects.isNull(user);
         } catch (Exception e) {
             log.error("查询用户失败,mag= ", e);
-            throw new ServiceException(Constants.HTTP_RES_CODE_500, "查询用户失败");
+            throw new ServiceException(ResConstants.HTTP_RES_CODE_500, "查询用户失败");
         }
     }
 
@@ -71,7 +70,7 @@ public class UserService {
             return userMapper.queryUserByName(username);
         } catch (Exception e) {
             log.error("查询用户失败,mag= ", e);
-            throw new ServiceException(Constants.HTTP_RES_CODE_500, "查询用户失败");
+            throw new ServiceException(ResConstants.HTTP_RES_CODE_500, "查询用户失败");
         }
     }
 
@@ -80,7 +79,7 @@ public class UserService {
             return userMapper.queryUserById(id);
         } catch (Exception e) {
             log.error("查询用户失败,mag= ", e);
-            throw new ServiceException(Constants.HTTP_RES_CODE_500, "查询用户失败");
+            throw new ServiceException(ResConstants.HTTP_RES_CODE_500, "查询用户失败");
         }
     }
 }
