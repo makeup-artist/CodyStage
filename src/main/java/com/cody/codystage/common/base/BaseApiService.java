@@ -11,7 +11,7 @@ public class BaseApiService<T> {
 
     // 返回错误，手动传code和msg
     public BaseResponse<T> setResultError(Integer code, String msg) {
-        return setResult(code, msg, null);
+        return setResult(code, msg);
     }
 
     // 返回错误，可以传msg
@@ -37,6 +37,9 @@ public class BaseApiService<T> {
     // 通用封装
     public BaseResponse<T> setResult(Integer code, String msg, T data) {
         return new BaseResponse<T>(code, msg, data);
+    }
+    public BaseResponse<T> setResult(Integer code, String msg) {
+        return new BaseResponse<T>(code, msg);
     }
 
     // 调用数据库层判断

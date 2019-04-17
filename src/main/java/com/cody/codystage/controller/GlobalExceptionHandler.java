@@ -1,9 +1,10 @@
-package com.cody.codystage.exception;
+package com.cody.codystage.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.cody.codystage.common.base.BaseApiService;
 import com.cody.codystage.common.base.BaseResponse;
 import com.cody.codystage.common.kafka.KafkaSender;
+import com.cody.codystage.exception.ServiceException;
 import com.cody.codystage.utils.DateUtil;
 import com.cody.codystage.common.constants.Constants;
 import com.google.common.collect.ImmutableMap;
@@ -15,7 +16,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.support.WebExchangeBindException;
 
@@ -24,37 +27,37 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 
-@RestController
+
 @Slf4j
+@ControllerAdvice
 public class GlobalExceptionHandler extends BaseApiService<JSONObject> {
     @Autowired
     private KafkaSender<JSONObject> kafkaSender;
 
     @ExceptionHandler(ServiceException.class)
-    public Map<String, Object> handleServiceException(ServiceException e) {
-        Map<String, Object> resMap = Maps.newHashMap();
-        resMap.put("code", e.getErrCode());
-        resMap.put("msg", e.getErrMsg());
-        return resMap;
+    @ResponseBody
+    public BaseResponse<JSONObject> handleServiceException(ServiceException e) {
+
+        return setResultError(e.getErrCode(),e.getErrMsg());
     }
 
-//    @ExceptionHandler(Exception.class)
-//    public Map<String,Object> handleException(Exception e){
-//        //错误信息打入kafka
-//        JSONObject errorJson=new JSONObject();
-//        JSONObject logJson=new JSONObject();
-//        logJson.put("request_time", DateUtil.getCurrentDateStr());
-//        logJson.put("error_info",e);
-//        errorJson.put("request_error",logJson);
-////        kafkaSender.send(errorJson);
-//
-//        Map<String,Object> resMap= Maps.newHashMap();
-//        resMap.put("code", Constants.HTTP_RES_CODE_500);
-//        resMap.put("msg",Constants.HTTP_RES_CODE_500_VALUE);
-//
-//        log.info("全局捕获异常",e);
-//        return resMap;
-//    }
+    @ExceptionHandler(Exception.class)
+    public Map<String,Object> handleException(Exception e){
+        //错误信息打入kafka
+        JSONObject errorJson=new JSONObject();
+        JSONObject logJson=new JSONObject();
+        logJson.put("request_time", DateUtil.getCurrentDateStr());
+        logJson.put("error_info",e);
+        errorJson.put("request_error",logJson);
+//        kafkaSender.send(errorJson);
+
+        Map<String,Object> resMap= Maps.newHashMap();
+        resMap.put("code", Constants.HTTP_RES_CODE_500);
+        resMap.put("msg",Constants.HTTP_RES_CODE_500_VALUE);
+
+        log.info("全局捕获异常",e);
+        return resMap;
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public BaseResponse<JSONObject> validationBodyException(MethodArgumentNotValidException exception) {

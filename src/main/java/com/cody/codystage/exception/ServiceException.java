@@ -1,12 +1,14 @@
 package com.cody.codystage.exception;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Arrays;
 
-@Data
+@Getter
+@Setter
 public class ServiceException extends RuntimeException {
-    private String errCode;
+    private Integer errCode;
     private Object[] params;
     private String errMsg;
 
@@ -18,20 +20,20 @@ public class ServiceException extends RuntimeException {
         super(errMsg);
     }
 
-    public ServiceException(String errCode, String errMsg) {
+    public ServiceException(Integer errCode, String errMsg) {
         super("errCode:" + errCode + ";errMsg:" + errMsg);
         this.errCode = errCode;
         this.errMsg = errMsg;
     }
 
-    public ServiceException(String errCode, Object[] params, String errMsg) {
+    public ServiceException(Integer errCode, Object[] params, String errMsg) {
         super("errCode:" + errCode + ";params:" + Arrays.toString(params) + ";errMsg:" + errMsg);
         this.errCode = errCode;
         this.params = params;
         this.errMsg = errMsg;
     }
 
-    public ServiceException(String errCode, String errMsg, Throwable throwable) {
+    public ServiceException(Integer errCode, String errMsg, Throwable throwable) {
         super("errCode:" + errCode + ";errMsg:" + errMsg, throwable);
         this.errCode = errCode;
         this.errMsg = errMsg;

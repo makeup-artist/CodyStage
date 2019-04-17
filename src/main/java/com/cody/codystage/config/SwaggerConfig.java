@@ -33,7 +33,7 @@ public class SwaggerConfig {
         return new ApiInfoBuilder()
                 .title("codyStage")
                 .description("Cody backStage")
-                .contact(new Contact("zq", "https://blog.apawn.top", "1012872209@qq.com"))
+                .contact(new Contact("zq", "https://github.com/makeup-artist", "1012872209@qq.com"))
                 .version("1.0.0")
                 .build();
     }

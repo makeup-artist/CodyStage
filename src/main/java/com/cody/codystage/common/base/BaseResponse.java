@@ -28,4 +28,8 @@ public class BaseResponse<T> {
         this.msg = msg;
         this.data = data;
     }
+    public BaseResponse(Integer code, String msg) {
+        this.code = code;
+        this.msg = msg;
+    }
 }

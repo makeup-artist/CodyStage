@@ -16,7 +16,7 @@ import java.util.Date;
 @ApiModel(value = "用户返回参数")
 public class UserOutDTO {
     @ApiModelProperty(value = "用户ID")
-    private Integer id;
+    private Long id;
     @ApiModelProperty(value = "用户名")
     private String username;
     @ApiModelProperty(value = "性别", notes = "0为男，1为女")
