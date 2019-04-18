@@ -6,7 +6,7 @@
 + 密码加盐+非对称加密处理
 #### Swagger API文档
 + 为了方便文档生成，皆定义DTO
-+ 地址http://apawn.top:8888/swagger-ui.html(加载巨慢,做好心理准备)
++ 地址http://apawn.top:8888/swagger-ui.html (加载巨慢,做好心理准备)
 ### 数据库设计
 + id是snowflake生成的Long类型，避免用光
 + 没用任何主键关联，复杂处理service层进行
