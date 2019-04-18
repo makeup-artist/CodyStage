@@ -18,7 +18,8 @@
 ### 中间件
 + 使用阿里云的对象存储，存储上传的图片及视频,有条件开启CDN
 ### 注意
-+ /user/login 为spring security 内置实现
-swagger文档中并不会显示，测试需postman获取token
++ /user/login 为spring security 内置实现故 swagger文档中并不会显示
+测试需postman获取token,body为{"username":"xxx","password":"xxx"}
+之后返回的header中有Authorization
 
 
