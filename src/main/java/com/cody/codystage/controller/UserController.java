@@ -39,7 +39,7 @@ public class UserController extends BaseApiService<Object> {
     @ApiOperation(value = "用户注册")
     public BaseResponse<Object> addUser(@Valid UserInputDTO userInputDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            throw new ServiceException(ResConstants.HTTP_RES_CODE_401, ResConstants.HTTP_RES_CODE_401_VALUE);
+            throw new ServiceException(ResConstants.HTTP_RES_CODE_400, ResConstants.HTTP_RES_CODE_400_VALUE);
         }
         User user = CodyBeanUtils.beanCopyPropertoes(userInputDTO, User.class);
         User userInfo = userService.userRegister(user);
