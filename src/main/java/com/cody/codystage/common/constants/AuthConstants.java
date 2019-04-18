@@ -11,6 +11,8 @@ public interface AuthConstants {
     String TOKEN_PREFIX = "Bearer ";
     String SECRET = "codyStage";
     String ISS = "echisan";
+    // 角色的key
+    String ROLE_CLAIMS = "rol";
     //token过期时间
     Long EXPIRATION = 3600L*8;
     //选择记住我或移动端过期时间—7天

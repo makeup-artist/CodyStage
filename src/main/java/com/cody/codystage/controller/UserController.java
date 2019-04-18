@@ -70,7 +70,7 @@ public class UserController extends BaseApiService<Object> {
     @ApiOperation(value = "根据用户名查询用户信息")
     public UserOutDTO getUserInfoByName(HttpServletRequest request) {
         if(request.getParameter("username").isEmpty()){
-            throw new ServiceException(ResConstants.HTTP_RES_CODE_401, ResConstants.HTTP_RES_CODE_401_VALUE);
+            throw new ServiceException(ResConstants.HTTP_RES_CODE_400, "传入参数格式错误");
         }
         String username = RequestUtil.getString(request, "username", "");
         User userInfo = userService.getUserInfo(username);

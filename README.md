@@ -1,32 +1,24 @@
 ## cody's backstage supporter
 ### 基础设施搭建
-+ jwt token对移动端支持更好
-+ spring security 权限控制
-+ Swagger API文档
-+ id是snowflake生成的Long类型
+#### spring security+jwt
++ 基于角色的权限控制(通俗将每个用户只会看到自己能看到的)
++ 集成jwt,验证用户登录状态及少量信息
 + 密码加盐+非对称加密处理
-+ Ehcache作一级缓存，redis作二级缓存
-+ kafka AOP统一日志收集发向ES，用于分析用户行为
-+ 使用七牛云的对象存储，存储上传的文件，有条件做CDN
-### 建表语句
-+ user表
-```
-CREATE TABLE `user`  (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '用户id',
-  `password` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '用户密码',
-  `username` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '用户名',
-  `age` int(11) NULL DEFAULT NULL COMMENT '年龄',
-  `nickname` varchar(60) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '昵称',
-  `picture` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '头像地址',
-  `description` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '个人描述',
-  `updateTime` datetime(0) NULL DEFAULT NULL COMMENT '更改时间',
-  `createTime` datetime(0) NULL DEFAULT NULL COMMENT '创建时间',
-  `isAvailable` tinyint(4) NULL DEFAULT NULL COMMENT '0可用，1不可用',
-  `gender` tinyint(4) NULL DEFAULT NULL COMMENT '0为男，1为女',
-  `tag` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '用户自己填写的标签',
-  `mobile` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '手机号',
-  `email` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '邮箱',
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+#### Swagger API文档
++ 为了方便文档生成，皆定义DTO
+### 数据库设计
++ id是snowflake生成的Long类型，避免用光
++ 不用任何主键关联，复杂处理service层进行
++ 
+### 用户行为分析
++ AOP统一日志收集发向kafka,在访问方法前后进行埋点
++ Spark Streaming 监听kafka，为用户打上相应的标签
++ 将标签和用户对应信息存于ElasticSearch,定时JOB用户标签衰减
++ 根据标签查找相应信息推荐给用户
+### 中间件
++ 使用阿里云的对象存储，存储上传的图片及视频,有条件开启CDN
+### 注意
++ /user/login 为spring security 内置实现
+swagger文档中并不会显示，测试需postman获取token
 
-```
+

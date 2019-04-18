@@ -1,14 +1,15 @@
 package com.cody.codystage.utils;
 
 import com.cody.codystage.common.constants.AuthConstants;
-import com.cody.codystage.common.constants.ResConstants;
-import com.cody.codystage.exception.ServiceException;
+
+import com.google.common.collect.Maps;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
 import java.util.Date;
-import java.util.Objects;
+import java.util.Map;
+
 
 /**
  * @Classname JwtTokenUtil
@@ -18,18 +19,15 @@ import java.util.Objects;
  */
 public class JwtTokenUtil {
 
-    /**
-     * 生成token
-     * @param id 用户ID
-     * @param isRemember true时间更长(选择记住或移动端)
-     * @return
-     */
-    public static String createToken(Long id, boolean isRemember) {
+    public static String createToken(String username, String role,boolean isRemember) {
         long expiration = isRemember ? AuthConstants.EXPIRATION_REMEMBER : AuthConstants.EXPIRATION;
+        Map<String,Object> map= Maps.newHashMap();
+        map.put(AuthConstants.ROLE_CLAIMS,role);
         return Jwts.builder()
                 .signWith(SignatureAlgorithm.HS512, AuthConstants.SECRET)
+                .setClaims(map)
                 .setIssuer(AuthConstants.ISS)
-                .setSubject(id.toString())
+                .setSubject(username)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * expiration))
                 .compact();
@@ -40,12 +38,17 @@ public class JwtTokenUtil {
      * @param token
      * @return
      */
-    public static Long getUserId(String token) {
-        String id = getTokenBody(token).getSubject();
-        if(Objects.isNull(id)){
-            throw new ServiceException(ResConstants.HTTP_RES_CODE_401,ResConstants.HTTP_RES_CODE_401_VALUE);
-        }
-        return Long.valueOf(id);
+    public static String getUsername(String token) {
+        return getTokenBody(token).getSubject();
+    }
+
+    /**
+     * 获取用户角色
+     * @param token
+     * @return
+     */
+    public static String getUserRole(String token){
+        return (String) getTokenBody(token).get(AuthConstants.ROLE_CLAIMS);
     }
 
     /**

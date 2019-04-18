@@ -41,4 +41,6 @@ public class UserOutDTO {
     private Date createTime;
     @ApiModelProperty(value = "账户是否可用", notes = "0可用，1不可用")
     private Integer isAvailable;
+    @ApiModelProperty(value = "角色")
+    private String role;
 }

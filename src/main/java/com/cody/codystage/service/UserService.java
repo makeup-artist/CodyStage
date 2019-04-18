@@ -4,12 +4,17 @@ import com.cody.codystage.common.constants.ResConstants;
 import com.cody.codystage.entity.User;
 import com.cody.codystage.exception.ServiceException;
 import com.cody.codystage.mapper.UserMapper;
+import com.cody.codystage.security.JwtUser;
 import com.cody.codystage.utils.DateUtil;
 import com.cody.codystage.utils.MD5Util;
 import com.cody.codystage.utils.twitter.SnowflakeIdUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -23,14 +28,12 @@ import java.util.Objects;
 
 @Service
 @Slf4j
-public class UserService {
-
-    @Value("${user.pwd.salt}")
-    private String salt;
+public class UserService implements UserDetailsService {
 
     @Autowired
     private UserMapper userMapper;
-
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public User userRegister(User user) {
         user.setId(SnowflakeIdUtil.nextId());
@@ -40,7 +43,10 @@ public class UserService {
 
         //用户名加盐加密
         String password = user.getPassword();
-        user.setPassword(MD5Util.getSaltMD5(password, salt));
+        user.setPassword(bCryptPasswordEncoder.encode(password));
+
+        //权限
+        user.setRole("ROLE_USER");
 
         //检查名称是否重复
         Boolean checkRes = checkUsernameRepeat(user.getUsername());
@@ -81,5 +87,17 @@ public class UserService {
             log.error("查询用户失败,mag= ", e);
             throw new ServiceException(ResConstants.HTTP_RES_CODE_500, "查询用户失败");
         }
+    }
+
+    /**
+     * spring security 实现接口
+     * @param s
+     * @return
+     * @throws UsernameNotFoundException
+     */
+    @Override
+    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
+        User user = userMapper.queryUserByName(s);
+        return new JwtUser(user);
     }
 }

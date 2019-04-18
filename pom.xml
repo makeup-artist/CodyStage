@@ -138,15 +138,11 @@
             <artifactId>commons-codec</artifactId>
             <version>1.12</version>
         </dependency>
-<<<<<<< HEAD
-        <!-- token -->
-=======
         <!-- 权限和token-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
->>>>>>> 6a0c51be1db5dff8ec7f788e5ea156a38a2820f3
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt</artifactId>

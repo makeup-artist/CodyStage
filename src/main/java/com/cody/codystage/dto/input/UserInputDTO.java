@@ -62,4 +62,6 @@ public class UserInputDTO {
     @Email(message = "错误的邮箱格式")
     private String email;
 
+    @ApiModelProperty(value = "角色")
+    private String role;
 }

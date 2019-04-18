@@ -26,5 +26,5 @@ public class User {
     private Timestamp updateTime;
     private Timestamp createTime;
     private Integer isAvailable;
-
+    private String role;
 }
