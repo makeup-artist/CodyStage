@@ -42,7 +42,6 @@ public class UserController extends BaseApiService<Object> {
     public BaseResponse<Object> addUser(@Valid UserInputDTO userInputDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new ServiceException(Constants.HTTP_RES_CODE_401, Constants.HTTP_RES_CODE_401_VALUE);
-            throw new MethodArgumentNotValidException(new MethodParameter(),);
         }
         User user = CodyBeanUtils.beanCopyPropertoes(userInputDTO, User.class);
         User userInfo = userService.userRegister(user);
