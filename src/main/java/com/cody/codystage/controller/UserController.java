@@ -94,4 +94,10 @@ public class UserController extends BaseApiService<Object> {
         return CodyBeanUtils.beanCopyPropertoes(userInfo, UserOutDTO.class);
     }
 
+//    @GetMapping(value = "/update", params = "username")
+//    @ApiOperation(value = "客户端根据用户名更改用户信息")
+//    public UserOutDTO updateUserInfoByName(){
+//
+//    }
+
 }
