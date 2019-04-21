@@ -7,6 +7,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.Map;
 
@@ -66,5 +67,11 @@ public class JwtTokenUtil {
                 .setSigningKey(AuthConstants.SECRET)
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    public static String getUsername(HttpServletRequest request){
+        String tokenHeader= request.getHeader("Authorization");
+        String token = tokenHeader.replace(AuthConstants.TOKEN_PREFIX, "");
+        return getUsername(token);
     }
 }

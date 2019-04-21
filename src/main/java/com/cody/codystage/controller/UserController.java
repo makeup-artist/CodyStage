@@ -1,5 +1,6 @@
 package com.cody.codystage.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.cody.codystage.common.base.BaseApiService;
 import com.cody.codystage.common.base.BaseResponse;
 import com.cody.codystage.common.constants.ResConstants;
@@ -9,6 +10,8 @@ import com.cody.codystage.entity.User;
 import com.cody.codystage.exception.ServiceException;
 import com.cody.codystage.service.UserService;
 import com.cody.codystage.utils.CodyBeanUtils;
+import com.cody.codystage.utils.JwtTokenUtil;
+import com.cody.codystage.utils.RedisUtil;
 import com.cody.codystage.utils.RequestUtil;
 import com.google.common.collect.Maps;
 import io.swagger.annotations.*;
@@ -32,8 +35,10 @@ import java.util.Objects;
 @RequestMapping("/user")
 @Api(tags = "用户API")
 public class UserController extends BaseApiService<Object> {
+
     @Autowired
     UserService userService;
+
 
     @PostMapping("/register")
     @ApiOperation(value = "用户注册")
@@ -75,7 +80,7 @@ public class UserController extends BaseApiService<Object> {
         String username = RequestUtil.getString(request, "username", "");
         User userInfo = userService.getUserInfo(username);
         if(Objects.isNull(userInfo)){
-            throw new ServiceException(ResConstants.HTTP_RES_CODE_1202, ResConstants.HTTP_RES_CODE_12012_VALUE);
+            throw new ServiceException(ResConstants.HTTP_RES_CODE_1202, ResConstants.HTTP_RES_CODE_1202_VALUE);
         }
         return CodyBeanUtils.beanCopyPropertoes(userInfo, UserOutDTO.class);
     }
@@ -89,14 +94,16 @@ public class UserController extends BaseApiService<Object> {
         Long id = RequestUtil.getLong(request, "id", 0L);
         User userInfo = userService.getUserInfo(id);
         if(Objects.isNull(userInfo)){
-            throw new ServiceException(ResConstants.HTTP_RES_CODE_1202, ResConstants.HTTP_RES_CODE_12012_VALUE);
+            throw new ServiceException(ResConstants.HTTP_RES_CODE_1202, ResConstants.HTTP_RES_CODE_1202_VALUE);
         }
         return CodyBeanUtils.beanCopyPropertoes(userInfo, UserOutDTO.class);
     }
 
-//    @GetMapping(value = "/update", params = "username")
+//    @GetMapping(value = "/update")
 //    @ApiOperation(value = "客户端根据用户名更改用户信息")
-//    public UserOutDTO updateUserInfoByName(){
+//    public void updateUserInfoByName(UserInputDTO inputDTO,HttpServletRequest request){
+//        String username = JwtTokenUtil.getUsername(request);
+//        userService.getUserInfo()
 //
 //    }
 

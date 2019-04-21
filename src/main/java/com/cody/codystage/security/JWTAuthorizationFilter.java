@@ -1,6 +1,7 @@
 package com.cody.codystage.security;
 
 import com.cody.codystage.common.constants.AuthConstants;
+import com.cody.codystage.exception.ServiceException;
 import com.cody.codystage.utils.JwtTokenUtil;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,14 +29,18 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-        String tokenHeader = request.getHeader(AuthConstants.TOKEN_HEADER);
-        if (tokenHeader == null || !tokenHeader.startsWith(AuthConstants.TOKEN_PREFIX)) {
-            chain.doFilter(request, response);
-            return;
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) {
+        try {
+            String tokenHeader = request.getHeader(AuthConstants.TOKEN_HEADER);
+            if (tokenHeader == null || !tokenHeader.startsWith(AuthConstants.TOKEN_PREFIX)) {
+                chain.doFilter(request, response);
+                return;
+            }
+            SecurityContextHolder.getContext().setAuthentication(getAuthentication(tokenHeader));
+            super.doFilterInternal(request, response, chain);
+        } catch (Exception e) {
+            throw new ServiceException(HttpServletResponse.SC_FORBIDDEN,"未授权");
         }
-        SecurityContextHolder.getContext().setAuthentication(getAuthentication(tokenHeader));
-        super.doFilterInternal(request, response, chain);
     }
 
     private UsernamePasswordAuthenticationToken getAuthentication(String tokenHeader) {

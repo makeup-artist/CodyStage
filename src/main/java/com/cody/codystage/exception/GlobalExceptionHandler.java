@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
@@ -65,14 +66,14 @@ public class GlobalExceptionHandler extends BaseApiService<JSONObject> {
             });
 
         }
-        return setResultError(401, "参数错误");
+        return setResultError(HttpServletResponse.SC_BAD_REQUEST, "参数错误");
     }
 
 
     @ExceptionHandler(HttpMessageConversionException.class)
     public BaseResponse<JSONObject> parameterTypeException(HttpMessageConversionException exception) {
         log.error(exception.getCause().getLocalizedMessage());
-        return setResultError(401, "类型转换错误");
+        return setResultError(HttpServletResponse.SC_BAD_REQUEST, "类型转换错误");
     }
 
 }

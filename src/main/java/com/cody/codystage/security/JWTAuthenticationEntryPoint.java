@@ -1,8 +1,7 @@
 package com.cody.codystage.security;
 
+import com.alibaba.fastjson.JSONObject;
 import com.cody.codystage.common.base.BaseApiService;
-import com.cody.codystage.common.constants.ResConstants;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
@@ -23,8 +22,10 @@ public class JWTAuthenticationEntryPoint extends BaseApiService<Object> implemen
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json; charset=utf-8");
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        String reason =authException.getMessage();
+        JSONObject res=new JSONObject();
+        res.put("code",HttpServletResponse.SC_FORBIDDEN);
+        res.put("msg",authException.getMessage());
         // 未授权统一处理
-        response.getWriter().print(setResultError(ResConstants.HTTP_RES_CODE_401,ResConstants.HTTP_RES_CODE_401_VALUE));
+        response.getWriter().print(res);
     }
 }

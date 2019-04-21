@@ -1,9 +1,18 @@
 package com.cody.codystage.security;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.cody.codystage.common.constants.AuthConstants;
 import com.cody.codystage.dto.input.UserLoginDTO;
+import com.cody.codystage.entity.User;
+import com.cody.codystage.exception.ServiceException;
+import com.cody.codystage.service.UserService;
 import com.cody.codystage.utils.JwtTokenUtil;
+import com.cody.codystage.utils.RedisUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,10 +34,10 @@ import java.util.Collection;
  * @Date 2019/4/18 22:25
  * @Created by ZQ
  */
+@Slf4j
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private AuthenticationManager authenticationManager;
-
 
     public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
@@ -52,21 +61,20 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     // 如果验证成功，就生成token并返回
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        String role = null;
+        String role = "";
         JwtUser jwtUser = (JwtUser) authResult.getPrincipal();
         Collection<? extends GrantedAuthority> authorities = jwtUser.getAuthorities();
-        for (GrantedAuthority authority : authorities){
+        for (GrantedAuthority authority : authorities) {
             role = authority.getAuthority();
         }
-        System.out.println(jwtUser);
-        System.out.println(role);
-        String token = JwtTokenUtil.createToken(jwtUser.getUsername(),role, true);
+        String token = JwtTokenUtil.createToken(jwtUser.getUsername(), role, true);
         response.setHeader("token", AuthConstants.TOKEN_PREFIX + token);
     }
+
 
     // 这是验证失败时候调用的方法
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
-        response.getWriter().write("authentication failed, reason: " + failed.getMessage());
+        throw new ServiceException(HttpServletResponse.SC_FORBIDDEN, "token验证失败");
     }
 }
