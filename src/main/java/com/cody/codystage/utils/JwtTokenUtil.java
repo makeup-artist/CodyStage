@@ -20,7 +20,7 @@ import java.util.Map;
  */
 public class JwtTokenUtil {
 
-    public static String createToken(String username, String role,boolean isRemember) {
+    public static String createToken(Long userId, String role,boolean isRemember) {
         long expiration = isRemember ? AuthConstants.EXPIRATION_REMEMBER : AuthConstants.EXPIRATION;
         Map<String,Object> map= Maps.newHashMap();
         map.put(AuthConstants.ROLE_CLAIMS,role);
@@ -28,7 +28,7 @@ public class JwtTokenUtil {
                 .signWith(SignatureAlgorithm.HS512, AuthConstants.SECRET)
                 .setClaims(map)
                 .setIssuer(AuthConstants.ISS)
-                .setSubject(username)
+                .setSubject(userId.toString())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * expiration))
                 .compact();
@@ -39,8 +39,8 @@ public class JwtTokenUtil {
      * @param token
      * @return
      */
-    public static String getUsername(String token) {
-        return getTokenBody(token).getSubject();
+    public static Long getUserId(String token) {
+        return Long.valueOf(getTokenBody(token).getSubject());
     }
 
     /**
@@ -69,9 +69,9 @@ public class JwtTokenUtil {
                 .getBody();
     }
 
-    public static String getUsername(HttpServletRequest request){
+    public static Long getUserId(HttpServletRequest request){
         String tokenHeader= request.getHeader("Authorization");
         String token = tokenHeader.replace(AuthConstants.TOKEN_PREFIX, "");
-        return getUsername(token);
+        return getUserId(token);
     }
 }

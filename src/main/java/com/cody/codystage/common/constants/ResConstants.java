@@ -10,6 +10,7 @@ public interface ResConstants {
     String HTTP_RES_CODE_1201_VALUE = "用户名重复";
     String HTTP_RES_CODE_1202_VALUE = "用户不存在";
     String HTTP_RES_CODE_1203_VALUE = "用户注册失败";
+    String HTTP_RES_CODE_1204_VALUE = "注册回滚多数据源失败";
 
     Integer HTTP_RES_CODE_200 = 200;
     Integer HTTP_RES_CODE_500 = 500;
@@ -19,4 +20,5 @@ public interface ResConstants {
     Integer HTTP_RES_CODE_1201 = 1201;
     Integer HTTP_RES_CODE_1202 = 1202;
     Integer HTTP_RES_CODE_1203 = 1203;
+    Integer HTTP_RES_CODE_1204 = 1204;
 }
