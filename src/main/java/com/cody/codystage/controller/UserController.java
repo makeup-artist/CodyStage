@@ -3,7 +3,10 @@ package com.cody.codystage.controller;
 import com.cody.codystage.common.base.BaseApiService;
 import com.cody.codystage.common.base.BaseResponse;
 import com.cody.codystage.common.constants.ResConstants;
+import com.cody.codystage.dto.input.UserAlterDTO;
 import com.cody.codystage.dto.input.UserInputDTO;
+import com.cody.codystage.dto.input.UserLoginDTO;
+import com.cody.codystage.dto.input.UserUpdateDTO;
 import com.cody.codystage.dto.output.UserOutDTO;
 import com.cody.codystage.entity.User;
 import com.cody.codystage.exception.ServiceException;
@@ -13,7 +16,6 @@ import com.cody.codystage.utils.JwtTokenUtil;
 import com.cody.codystage.utils.RequestUtil;
 import com.google.common.collect.Maps;
 import io.swagger.annotations.*;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +24,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -45,7 +46,7 @@ public class UserController extends BaseApiService<Object> {
     public BaseResponse<Object> addUser(@Valid UserInputDTO userInputDTO, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response) {
         HashMap<Object, Object> resMap = Maps.newHashMap();
         if (bindingResult.hasErrors()) {
-            throw new ServiceException(ResConstants.HTTP_RES_CODE_400, ResConstants.HTTP_RES_CODE_400_VALUE);
+            throw new ServiceException(ResConstants.HTTP_RES_CODE_1206, ResConstants.HTTP_RES_CODE_1206_VALUE);
         }
         User user = CodyBeanUtils.beanCopyPropertoes(userInputDTO, User.class);
         String token = userService.userRegister(user, response);
@@ -57,28 +58,22 @@ public class UserController extends BaseApiService<Object> {
 
     @GetMapping(value = "/register/check", params = "username")
     @ApiOperation(value = "用户名重复检测", notes = "返回0代表无重复")
-    public Map<String, Object> checkUsername(HttpServletRequest request, HttpServletResponse response) {
-        Map<String, Object> resMap = Maps.newHashMap();
+    public BaseResponse<Object> checkUsername(HttpServletRequest request, HttpServletResponse response) {
+
         String username = RequestUtil.getString(request, "username", "");
-        if (StringUtils.isEmpty(username)) {
-            resMap.put("repeat", true);
-            return resMap;
-        }
         Boolean isRepeat = userService.checkUsernameRepeat(username);
         if (isRepeat) {
-            resMap.put("repeat", 0);
+            return setResultError(ResConstants.HTTP_RES_CODE_1207,ResConstants.HTTP_RES_CODE_1207_VALUE);
         } else {
-            resMap.put("repeat", 1);
+            return setResultError(ResConstants.HTTP_RES_CODE_1208,ResConstants.HTTP_RES_CODE_1208_VALUE);
         }
-
-        return resMap;
     }
 
     @GetMapping(value = "/userInfo/username", params = "username")
     @ApiOperation(value = "根据用户名查询用户信息")
     public UserOutDTO getUserInfoByName(HttpServletRequest request,HttpServletResponse response) {
         if(request.getParameter("username").isEmpty()){
-            throw new ServiceException(ResConstants.HTTP_RES_CODE_400, "传入参数格式错误");
+            throw new ServiceException(ResConstants.HTTP_RES_CODE_1206, ResConstants.HTTP_RES_CODE_1206_VALUE);
         }
         String username = RequestUtil.getString(request, "username", "");
         User userInfo = userService.getUserInfo(username);
@@ -104,25 +99,54 @@ public class UserController extends BaseApiService<Object> {
         return CodyBeanUtils.beanCopyPropertoes(userInfo, UserOutDTO.class);
     }
 
-    @GetMapping(value = "/update")
-    @ApiOperation(value = "客户端根据用户名更改用户信息")
-    public void updateUserInfoByName(@Valid UserInputDTO inputDTO, BindingResult bindingResult,HttpServletRequest request){
+    @PostMapping(value = "/update")
+    @ApiOperation(value = "用户更改用户信息")
+    public BaseResponse<Object> updateUserInfoByName(@Valid UserUpdateDTO inputDTO, BindingResult bindingResult, HttpServletRequest request){
 
         if (bindingResult.hasErrors()) {
-            throw new ServiceException(ResConstants.HTTP_RES_CODE_400, ResConstants.HTTP_RES_CODE_400_VALUE);
+            throw new ServiceException(ResConstants.HTTP_RES_CODE_1206, ResConstants.HTTP_RES_CODE_1206_VALUE);
         }
-        userService.getUserInfo()
+
+        Long userId = JwtTokenUtil.getUserId(request);
+        if(inputDTO.getUsername().equals(userService.getUserInfo(userId).getUsername()) || userService.checkUsernameRepeat(inputDTO.getUsername())){
+            User userInfo = userService.updateUserInfo(userId, inputDTO);
+            return setResult(ResConstants.HTTP_RES_CODE_200,"修改信息成功",CodyBeanUtils.beanCopyPropertoes(userInfo, UserOutDTO.class));
+        }else {
+            return setResultError(ResConstants.HTTP_RES_CODE_1208,ResConstants.HTTP_RES_CODE_1208_VALUE);
+        }
 
     }
 
-    @GetMapping(value = "/login")
+    @PostMapping(value = "/login")
     @ApiOperation(value = "客户端登录")
-    public void login(@Valid UserInputDTO inputDTO, BindingResult bindingResult,HttpServletRequest request){
+    public BaseResponse<Object> login(@Valid UserLoginDTO inputDTO, BindingResult bindingResult, HttpServletRequest request){
 
         if (bindingResult.hasErrors()) {
-            throw new ServiceException(ResConstants.HTTP_RES_CODE_400, ResConstants.HTTP_RES_CODE_400_VALUE);
+            throw new ServiceException(ResConstants.HTTP_RES_CODE_1206, ResConstants.HTTP_RES_CODE_1206_VALUE);
         }
-        userService.getUserInfo()
+
+        String token = userService.login(inputDTO);
+        if(Objects.isNull(token)){
+            return setResultError(ResConstants.HTTP_RES_CODE_1205,ResConstants.HTTP_RES_CODE_1205_VALUE);
+        }else {
+            return setResult(ResConstants.HTTP_RES_CODE_200,"登录成功",token);
+        }
+
+    }
+
+    @PostMapping(value = "/AterPassword")
+    @ApiOperation(value = "修改用户密码")
+    public BaseResponse<Object> alterPassword(@Valid UserAlterDTO userAlterDTO,BindingResult bindingResult,HttpServletRequest request){
+        if (bindingResult.hasErrors()) {
+            throw new ServiceException(ResConstants.HTTP_RES_CODE_1206, ResConstants.HTTP_RES_CODE_1206_VALUE);
+        }
+
+        Boolean res = userService.alterPassword(userAlterDTO);
+        if(res){
+            return setResultSuccess("修改密码成功");
+        }else {
+            return setResultError(ResConstants.HTTP_RES_CODE_1210,ResConstants.HTTP_RES_CODE_1210_VALUE);
+        }
 
     }
 

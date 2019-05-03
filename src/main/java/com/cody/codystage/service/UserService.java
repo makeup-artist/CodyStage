@@ -5,6 +5,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.cody.codystage.common.constants.RedisConstants;
 import com.cody.codystage.common.constants.ResConstants;
+import com.cody.codystage.dto.input.UserAlterDTO;
+import com.cody.codystage.dto.input.UserLoginDTO;
+import com.cody.codystage.dto.input.UserUpdateDTO;
 import com.cody.codystage.dto.output.UserOutDTO;
 import com.cody.codystage.entity.User;
 import com.cody.codystage.exception.ServiceException;
@@ -79,10 +82,16 @@ public class UserService  {
         return JwtTokenUtil.createToken(user.getId(), user.getRole(), true);
     }
 
+    /**
+     *
+     * @param username
+     * @return true 代表不重复
+     */
     public Boolean checkUsernameRepeat(String username) {
         try {
 
             User user = userMapper.queryUserByName(username);
+            System.out.println(user);
             return Objects.isNull(user);
         } catch (Exception e) {
             log.error("查询用户失败,mag= ", e);
@@ -114,8 +123,47 @@ public class UserService  {
         }
     }
 
-    public UserOutDTO cupdateUserInfoByName(User user){
+    public User updateUserInfo(Long userId,UserUpdateDTO user){
+        if(userMapper.update(userId, user)==0){
+            throw new ServiceException(ResConstants.HTTP_RES_CODE_1209, ResConstants.HTTP_RES_CODE_1209_VALUE);
+        }
+        User userInfo = getUserInfo(user.getUsername());
+        redisService.set(RedisConstants.USERINFO+userInfo.getId(), JSONObject.toJSONString(userInfo, SerializerFeature.WriteNullStringAsEmpty));
+        return userInfo;
+    }
 
+    public String login(UserLoginDTO userLoginDTO){
+
+        String password = userLoginDTO.getPassword();
+        userLoginDTO.setPassword(MD5Util.getSaltMD5(password,salt));
+        User user = userMapper.login(userLoginDTO.getUsername(), userLoginDTO.getPassword());
+
+        if(Objects.isNull(user)){
+            return null;
+        }else {
+            return JwtTokenUtil.createToken(user.getId(), user.getRole(), true);
+        }
+    }
+
+    public Boolean alterPassword(UserAlterDTO userAlterDTO){
+
+        userAlterDTO.setNewPassword(MD5Util.getSaltMD5(userAlterDTO.getNewPassword(),salt));
+        userAlterDTO.setOldPassword(MD5Util.getSaltMD5(userAlterDTO.getOldPassword(),salt));
+
+        User user = userMapper.login(userAlterDTO.getUsername(),userAlterDTO.getOldPassword());
+
+        if(Objects.isNull(user)){
+            throw new ServiceException(ResConstants.HTTP_RES_CODE_1205,ResConstants.HTTP_RES_CODE_1205_VALUE);
+        }
+
+        Integer integer = userMapper.alterPassword(userAlterDTO.getUsername(),userAlterDTO.getNewPassword());
+        if(integer==1){
+            User userInfo = userMapper.queryUserByName(userAlterDTO.getUsername());
+            redisService.set(RedisConstants.USERINFO+userInfo.getId(), JSONObject.toJSONString(userInfo, SerializerFeature.WriteNullStringAsEmpty));
+            return true;
+        }else {
+            return false;
+        }
     }
 
     /**
