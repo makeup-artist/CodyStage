@@ -1,4 +1,4 @@
-package com.cody.codystage.dto.input;
+package com.cody.codystage.bean.dto.input;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

@@ -1,10 +1,8 @@
 package com.cody.codystage.mapper;
 
-import com.cody.codystage.dto.input.UserAlterDTO;
-import com.cody.codystage.dto.input.UserUpdateDTO;
-import io.swagger.models.auth.In;
+import com.cody.codystage.bean.dto.input.UserUpdateDTO;
 import org.apache.ibatis.annotations.*;
-import com.cody.codystage.entity.User;
+import com.cody.codystage.bean.po.User;
 
 /**
  * @Classname UserMapper

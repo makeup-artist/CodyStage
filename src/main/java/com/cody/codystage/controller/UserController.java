@@ -3,13 +3,13 @@ package com.cody.codystage.controller;
 import com.cody.codystage.common.base.BaseApiService;
 import com.cody.codystage.common.base.BaseResponse;
 import com.cody.codystage.common.constants.ResConstants;
-import com.cody.codystage.dto.input.UserAlterDTO;
-import com.cody.codystage.dto.input.UserInputDTO;
-import com.cody.codystage.dto.input.UserLoginDTO;
-import com.cody.codystage.dto.input.UserUpdateDTO;
-import com.cody.codystage.dto.output.UserOutDTO;
-import com.cody.codystage.entity.User;
-import com.cody.codystage.exception.ServiceException;
+import com.cody.codystage.bean.dto.input.UserAlterDTO;
+import com.cody.codystage.bean.dto.input.UserInputDTO;
+import com.cody.codystage.bean.dto.input.UserLoginDTO;
+import com.cody.codystage.bean.dto.input.UserUpdateDTO;
+import com.cody.codystage.bean.dto.output.UserOutDTO;
+import com.cody.codystage.bean.po.User;
+import com.cody.codystage.common.exception.ServiceException;
 import com.cody.codystage.service.UserService;
 import com.cody.codystage.utils.CodyBeanUtils;
 import com.cody.codystage.utils.JwtTokenUtil;
@@ -33,7 +33,7 @@ import java.util.Objects;
  * @Created by ZQ
  */
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 @Api(tags = "用户API")
 public class UserController extends BaseApiService<Object> {
 

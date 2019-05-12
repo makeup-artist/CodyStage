@@ -1,4 +1,4 @@
-package com.cody.codystage.exception;
+package com.cody.codystage.common.exception;
 
 import lombok.Getter;
 import lombok.Setter;

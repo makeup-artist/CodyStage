@@ -6,12 +6,12 @@
         id,username,password,age,nickname,picture,description,updateTime,createTime,isAvailable,gender,tag,mobile,email
     </sql>
 
-    <select id="queryUserByName" resultType="com.cody.codystage.entity.User" parameterType="string">
+    <select id="queryUserByName" resultType="com.cody.codystage.bean.po.User" parameterType="string">
         select * from user
         where username=#{username}
     </select>
 
-    <select id="queryUserById" resultType="com.cody.codystage.entity.User" parameterType="Long">
+    <select id="queryUserById" resultType="com.cody.codystage.bean.po.User" parameterType="Long">
         select * from user
         where id=#{id}
     </select>

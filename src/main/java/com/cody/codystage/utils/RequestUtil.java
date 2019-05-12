@@ -3,6 +3,8 @@ package com.cody.codystage.utils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.cody.codystage.common.constants.ResConstants;
+import com.cody.codystage.common.exception.ServiceException;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -341,8 +343,31 @@ public class RequestUtil {
     }
 
     public static MultipartFile getFile(HttpServletRequest request, String key) {
-        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-        return multipartRequest.getFile(key);
+        if (isMultipartContent(request)) {
+            MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+            return multipartRequest.getFile(key);
+        }else {
+            throw new ServiceException(ResConstants.HTTP_RES_CODE_1212,ResConstants.HTTP_RES_CODE_1212_VALUE);
+        }
+
+    }
+
+    /**
+     * 判断是否是multipart/form-data请求
+     *
+     * @param request
+     * @return
+     */
+    public static boolean isMultipartContent(HttpServletRequest request) {
+        if (!"post".equals(request.getMethod().toLowerCase())) {
+            return false;
+        }
+        String contentType = request.getContentType();
+        if ((contentType != null) && (contentType.toLowerCase().startsWith("multipart/"))) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**

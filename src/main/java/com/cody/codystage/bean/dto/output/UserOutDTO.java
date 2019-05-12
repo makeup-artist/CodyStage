@@ -1,4 +1,4 @@
-package com.cody.codystage.dto.output;
+package com.cody.codystage.bean.dto.output;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

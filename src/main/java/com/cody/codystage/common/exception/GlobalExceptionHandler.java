@@ -1,4 +1,4 @@
-package com.cody.codystage.exception;
+package com.cody.codystage.common.exception;
 
 import com.alibaba.fastjson.JSONObject;
 import com.cody.codystage.common.base.BaseApiService;

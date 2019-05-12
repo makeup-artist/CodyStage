@@ -1,7 +1,5 @@
-package com.cody.codystage.entity;
+package com.cody.codystage.bean.po;
 
-import com.alibaba.fastjson.annotation.JSONField;
-import com.alibaba.fastjson.serializer.SerializerFeature;
 import lombok.Data;
 
 import java.sql.Timestamp;

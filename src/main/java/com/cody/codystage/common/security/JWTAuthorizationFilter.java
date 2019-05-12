@@ -1,7 +1,7 @@
 //package com.cody.codystage.common.security;
 //
 //import com.cody.codystage.common.constants.AuthConstants;
-//import com.cody.codystage.exception.ServiceException;
+//import com.cody.codystage.common.exception.ServiceException;
 //import com.cody.codystage.utils.JwtTokenUtil;
 //import org.springframework.security.authentication.AuthenticationManager;
 //import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
