@@ -7,6 +7,7 @@
 #### Swagger API文档
 + 为了方便文档生成，皆定义DTO
 + 地址http://apawn.top:8888/swagger-ui.html (加载巨慢,做好心理准备)
++ 页面右上方Authority加入token，即可在所有请求中加入token
 ### 数据库设计
 + id是snowflake生成的Long类型，避免用光
 + 没用任何主键关联，复杂处理service层进行
@@ -17,9 +18,5 @@
 + 根据标签查找相应信息推荐给用户
 ### 中间件
 + 使用阿里云的对象存储，存储上传的图片及视频,有条件开启CDN
-### 注意
-+ /user/login 为spring security 内置实现故 swagger文档中并不会显示
-测试需postman获取token,body为{"username":"xxx","password":"xxx"}
-之后返回的header中有Authorization
 
 
