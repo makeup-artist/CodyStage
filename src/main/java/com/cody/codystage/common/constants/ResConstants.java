@@ -24,6 +24,11 @@ public interface ResConstants {
     String HTTP_RES_CODE_1214_VALUE = "修改信息失败";
     String HTTP_RES_CODE_1215_VALUE = "删除信息失败";
     String HTTP_RES_CODE_1216_VALUE = "增加失败";
+    String HTTP_RES_CODE_1217_VALUE = "重复点赞";
+    String HTTP_RES_CODE_1218_VALUE = "未点过赞";
+    String HTTP_RES_CODE_1219_VALUE = "点过赞";
+    String HTTP_RES_CODE_1220_VALUE = "帖子不存在";
+    String HTTP_RES_CODE_1221_VALUE = "小视频不存在";
 
     Integer HTTP_RES_CODE_200 = 200;
     Integer HTTP_RES_CODE_500 = 500;
@@ -46,4 +51,9 @@ public interface ResConstants {
     Integer HTTP_RES_CODE_1214 = 1214;
     Integer HTTP_RES_CODE_1215 = 1215;
     Integer HTTP_RES_CODE_1216 = 1216;
+    Integer HTTP_RES_CODE_1217 = 1217;
+    Integer HTTP_RES_CODE_1218 = 1218;
+    Integer HTTP_RES_CODE_1219 = 1219;
+    Integer HTTP_RES_CODE_1220 = 1220;
+    Integer HTTP_RES_CODE_1221 = 1221;
 }

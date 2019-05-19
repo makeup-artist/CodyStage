@@ -1,5 +1,6 @@
 package com.cody.codystage.service;
 
+import com.cody.codystage.bean.po.Post;
 import com.cody.codystage.bean.po.Video;
 import com.cody.codystage.mapper.VideoMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -49,5 +50,17 @@ public class VideoService {
 
     public List<Map<String,Object>> searchVideo(String condition,int page,int limit){
         return  videoMapper.searchVideo(condition,page,limit);
+    }
+
+    public Integer addLike(Integer id){
+        return videoMapper.addLike(id);
+    }
+
+    public Integer deleteLike(Integer id){
+        return videoMapper.deleteLike(id);
+    }
+
+    public List<Video> selectVideoByList(List<Integer> videoList) {
+        return videoMapper.selectVideoByList(videoList);
     }
 }

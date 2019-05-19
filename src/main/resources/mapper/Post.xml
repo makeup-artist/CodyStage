@@ -11,4 +11,14 @@
         where id=#{id}
     </select>
 
+    <select id="selectPostByList" parameterType="java.util.List" resultType="com.cody.codystage.bean.po.Post">
+        select * from post
+        <if test="list !=null">
+            where id in
+            <foreach collection="list" item="item" open="(" close=")"  separator=",">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
 </mapper>

@@ -1,6 +1,7 @@
 package com.cody.codystage.controller;
 
 import com.cody.codystage.bean.dto.in.PostAddInDTO;
+import com.cody.codystage.bean.dto.in.PostInfoListInDTO;
 import com.cody.codystage.bean.dto.in.PostUpdateInDTO;
 import com.cody.codystage.bean.po.Post;
 import com.cody.codystage.common.base.BaseApiService;
@@ -139,6 +140,16 @@ public class PostController extends BaseApiService<Object> {
 
         List<Map<String, Object>> res = postService.searchPost(condition, page, limit);
         return setResult(ResConstants.HTTP_RES_CODE_200, ResConstants.HTTP_RES_CODE_200_VALUE_1, res);
+    }
+
+    @PostMapping(value = "/getByList")
+    @ApiOperation(value = "通过帖子id的列表得到帖子的信息")
+    public BaseResponse<Object> getPostByList(@Valid PostInfoListInDTO postInfoListInDTO, BindingResult bindingResult,HttpServletRequest request, HttpServletResponse response){
+        commonService.checkDto(bindingResult);
+
+        List<Post> posts = postService.selectPostByList(postInfoListInDTO.getPostList());
+        return setResultSuccess(posts);
+
     }
 
 }

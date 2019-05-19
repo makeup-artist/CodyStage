@@ -1,8 +1,11 @@
 package com.cody.codystage.controller;
 
 
+import com.cody.codystage.bean.dto.in.PostInfoListInDTO;
 import com.cody.codystage.bean.dto.in.VideoAddInDTO;
+import com.cody.codystage.bean.dto.in.VideoInfoListInDTO;
 import com.cody.codystage.bean.dto.in.VideoUpdateInDTO;
+import com.cody.codystage.bean.po.Post;
 import com.cody.codystage.bean.po.Video;
 import com.cody.codystage.common.base.BaseApiService;
 import com.cody.codystage.common.base.BaseResponse;
@@ -143,6 +146,16 @@ public class VideoController extends BaseApiService<Object> {
 
         List<Map<String,Object>> res=videoService.searchVideo(condition,page,limit);
         return setResult(ResConstants.HTTP_RES_CODE_200, ResConstants.HTTP_RES_CODE_200_VALUE_1,res);
+    }
+
+    @PostMapping(value = "/getByList")
+    @ApiOperation(value = "通过视频id的列表得到视频的信息")
+    public BaseResponse<Object> getVideoByList(@Valid VideoInfoListInDTO videoInfoListInDTO, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response){
+        commonService.checkDto(bindingResult);
+
+        List<Video> videos = videoService.selectVideoByList(videoInfoListInDTO.getVideoList());
+        return setResultSuccess(videos);
+
     }
 
 }

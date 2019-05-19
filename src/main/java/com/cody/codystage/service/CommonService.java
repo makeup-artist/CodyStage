@@ -47,4 +47,10 @@ public class CommonService {
             throw new ServiceException(ResConstants.HTTP_RES_CODE_401, ResConstants.HTTP_RES_CODE_401_VALUE);
         }
     }
+
+    public void checkIdAndType(HttpServletRequest request){
+        if(request.getParameter("id").isEmpty() || request.getParameter("type").isEmpty()){
+            throw new ServiceException(ResConstants.HTTP_RES_CODE_401, ResConstants.HTTP_RES_CODE_401_VALUE);
+        }
+    }
 }

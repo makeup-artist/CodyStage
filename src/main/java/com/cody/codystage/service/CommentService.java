@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @Classname CommentService
@@ -47,7 +48,15 @@ public class CommentService {
         comments.forEach(e->{
             if (e.getGrade()==2){
                 List<Comment> list = (List<Comment>) resMap.get(e.getTo_comment_id());
-                list.add(e);
+
+                if(Objects.isNull(list)){
+                    List<Comment> newList=new LinkedList<>();
+                    newList.add(e);
+                    resMap.put(e.getTo_comment_id(),newList);
+                }else {
+                    list.add(e);
+                }
+
             }
         });
         return resMap;

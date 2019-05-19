@@ -1,7 +1,6 @@
 package com.cody.codystage.controller;
 
 import com.cody.codystage.bean.dto.in.CommentAddInDTO;
-import com.cody.codystage.bean.dto.in.PostAddInDTO;
 import com.cody.codystage.bean.po.Comment;
 import com.cody.codystage.common.base.BaseApiService;
 import com.cody.codystage.common.base.BaseResponse;
@@ -11,7 +10,6 @@ import com.cody.codystage.service.CommonService;
 import com.cody.codystage.utils.CodyBeanUtils;
 import com.cody.codystage.utils.JwtTokenUtil;
 import com.cody.codystage.utils.RequestUtil;
-import com.google.common.collect.Maps;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.validation.BindingResult;
@@ -21,8 +19,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @Classname CommentController

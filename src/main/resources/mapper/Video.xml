@@ -5,4 +5,14 @@
     <insert id="addVideo" parameterType="com.cody.codystage.bean.po.Video"  useGeneratedKeys="true" keyProperty="id">
         insert into `video`(author,url,title,star) values(#{author},#{url},#{title},#{star})
     </insert>
+
+    <select id="selectVideoByList" parameterType="java.util.List" resultType="com.cody.codystage.bean.po.Video">
+        select * from video
+        <if test="list !=null">
+            where id in
+            <foreach collection="list" item="item" open="(" close=")"  separator=",">
+                #{item}
+            </foreach>
+        </if>
+    </select>
 </mapper>
