@@ -1,6 +1,9 @@
 package com.cody.codystage.mapper;
 
-import org.apache.ibatis.annotations.Mapper;
+import com.cody.codystage.bean.po.Comment;
+import org.apache.ibatis.annotations.*;
+
+import java.util.List;
 
 /**
  * @Classname CommentMapper
@@ -10,4 +13,14 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface CommentMapper {
+
+    @Insert("insert into `comment`(author,belong,type,content,grade,to_comment_id) values(#{author},#{belong},#{type},#{content},#{grade},#{to_comment_id})")
+    Integer addComment(Comment comment);
+
+    @Delete("delete  from `comment` where id=#{id} and author =#{userId}")
+    Integer deleteComment(@Param("id") Integer id,@Param("userId") Long userId);
+
+    @Select("select * from `comment` where belong=#{belong} and type=#{type}")
+    List<Comment> getComment(@Param("belong") Integer belong,@Param("type") Integer type);
+
 }

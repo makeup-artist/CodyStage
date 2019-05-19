@@ -1,12 +1,28 @@
 package com.cody.codystage.controller;
 
+import com.cody.codystage.bean.dto.in.CommentAddInDTO;
+import com.cody.codystage.bean.dto.in.PostAddInDTO;
+import com.cody.codystage.bean.po.Comment;
 import com.cody.codystage.common.base.BaseApiService;
+import com.cody.codystage.common.base.BaseResponse;
+import com.cody.codystage.common.constants.ResConstants;
 import com.cody.codystage.service.CommentService;
+import com.cody.codystage.service.CommonService;
+import com.cody.codystage.utils.CodyBeanUtils;
+import com.cody.codystage.utils.JwtTokenUtil;
+import com.cody.codystage.utils.RequestUtil;
+import com.google.common.collect.Maps;
 import io.swagger.annotations.Api;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @Classname CommentController
@@ -20,5 +36,51 @@ import javax.annotation.Resource;
 public class CommentController extends BaseApiService<Object> {
 
     @Resource
+    private CommonService commonService;
+
+    @Resource
     private CommentService commentService;
+
+    @PostMapping("/add")
+    @ApiOperation(value = "添加评论 (token yes)")
+    public BaseResponse<Object> addComment(@Valid CommentAddInDTO commentAddInDTO, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response) {
+        commonService.checkDto(bindingResult);
+
+        Comment comment = CodyBeanUtils.beanCopyPropertoes(commentAddInDTO, Comment.class);
+        comment.setAuthor(JwtTokenUtil.getUserId(request));
+        Integer res = commentService.addComment(comment);
+
+        if (res > 0) {
+            return setResult(ResConstants.HTTP_RES_CODE_200, ResConstants.HTTP_RES_CODE_200_VALUE_1);
+        } else {
+            return setResult(ResConstants.HTTP_RES_CODE_1216, ResConstants.HTTP_RES_CODE_1216_VALUE);
+        }
+    }
+
+    @DeleteMapping(value = "/delete", params = {"id"})
+    @ApiOperation(value = "删除评论 需要评论id (token yes)")
+    public BaseResponse<Object> deleteComment(HttpServletRequest request, HttpServletResponse response) {
+        commonService.checkId(request);
+
+        int id = RequestUtil.getInt(request, "id", 0);
+        Long userId = JwtTokenUtil.getUserId(request);
+        Integer res = commentService.deleteComment(id, userId);
+
+        if (res > 0) {
+            return setResult(ResConstants.HTTP_RES_CODE_200, ResConstants.HTTP_RES_CODE_200_VALUE_1);
+        } else {
+            return setResult(ResConstants.HTTP_RES_CODE_1214, ResConstants.HTTP_RES_CODE_1214_VALUE);
+        }
+    }
+
+    @GetMapping(value = "/get", params = {"belong","type"})
+    @ApiOperation(value = "获取评论 需要评论的属祖的类型和id (token yes)")
+    public Object getComment(HttpServletRequest request, HttpServletResponse response) {
+        commonService.checkBelongAndType(request);
+
+        int belong = RequestUtil.getInt(request, "belong", 0);
+        int type = RequestUtil.getInt(request, "type", 0);
+
+        return commentService.getComment(belong, type);
+    }
 }

@@ -3,6 +3,7 @@ package com.cody.codystage.common.constants;
 public interface ResConstants {
 
     String HTTP_RES_CODE_200_VALUE = "请求成功";
+    String HTTP_RES_CODE_200_VALUE_1 = "success";
     String HTTP_RES_CODE_400_VALUE = "客户端错误";
     String HTTP_RES_CODE_401_VALUE = "用户未认证";
     String HTTP_RES_CODE_403_VALUE = "权限不足";
@@ -20,6 +21,9 @@ public interface ResConstants {
     String HTTP_RES_CODE_1211_VALUE = "文件上传失败";
     String HTTP_RES_CODE_1212_VALUE = "文件上传格式不符合";
     String HTTP_RES_CODE_1213_VALUE = "文件上传格式错误";
+    String HTTP_RES_CODE_1214_VALUE = "修改信息失败";
+    String HTTP_RES_CODE_1215_VALUE = "删除信息失败";
+    String HTTP_RES_CODE_1216_VALUE = "增加失败";
 
     Integer HTTP_RES_CODE_200 = 200;
     Integer HTTP_RES_CODE_500 = 500;
@@ -39,4 +43,7 @@ public interface ResConstants {
     Integer HTTP_RES_CODE_1211 = 1211;
     Integer HTTP_RES_CODE_1212 = 1212;
     Integer HTTP_RES_CODE_1213 = 1213;
+    Integer HTTP_RES_CODE_1214 = 1214;
+    Integer HTTP_RES_CODE_1215 = 1215;
+    Integer HTTP_RES_CODE_1216 = 1216;
 }

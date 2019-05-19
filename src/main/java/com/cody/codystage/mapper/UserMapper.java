@@ -1,6 +1,6 @@
 package com.cody.codystage.mapper;
 
-import com.cody.codystage.bean.dto.input.UserUpdateDTO;
+import com.cody.codystage.bean.dto.in.UserUpdateDTO;
 import org.apache.ibatis.annotations.*;
 import com.cody.codystage.bean.po.User;
 

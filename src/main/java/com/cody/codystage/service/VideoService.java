@@ -1,7 +1,13 @@
 package com.cody.codystage.service;
 
+import com.cody.codystage.bean.po.Video;
+import com.cody.codystage.mapper.VideoMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @Classname VideoService
@@ -12,4 +18,36 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class VideoService {
+
+    @Resource
+    private VideoMapper videoMapper;
+
+    public Integer addVideo(Video video){
+
+        return videoMapper.addVideo(video);
+    }
+
+    public Integer updateVideo(Video video){
+        return videoMapper.updateVideo(video);
+    }
+
+    public Integer deleteVideo(int id,long userid){
+        return videoMapper.deleteVideo(id,userid);
+    }
+
+    public Map<String,Object> selectVideo(int id){
+        return videoMapper.selectVideo(id);
+    }
+
+    public List<Map<String,Object>> getVideo(int page, int limit){
+        return videoMapper.getVideo(page,limit);
+    }
+
+    public List<Map<String,Object>> getVideoByUserId(int page,int limit,long userId){
+        return videoMapper.getVideoByUserId(page,limit,userId);
+    }
+
+    public List<Map<String,Object>> searchVideo(String condition,int page,int limit){
+        return  videoMapper.searchVideo(condition,page,limit);
+    }
 }
