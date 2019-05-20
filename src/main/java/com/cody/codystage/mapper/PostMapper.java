@@ -1,7 +1,6 @@
 package com.cody.codystage.mapper;
 
 import com.cody.codystage.bean.po.Post;
-import javafx.geometry.Pos;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;

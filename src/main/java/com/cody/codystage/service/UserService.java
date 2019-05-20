@@ -34,6 +34,7 @@ import java.util.Objects;
 
 @Service
 @Slf4j
+@Transactional
 public class UserService  {
 
     @Autowired

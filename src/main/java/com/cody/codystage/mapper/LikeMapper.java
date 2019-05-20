@@ -24,6 +24,6 @@ public interface LikeMapper {
     @Delete("delete from `like` where author=#{author} and type=#{type} and belong=#{belong} ")
     void deleteLike(Like like);
 
-    @Select("select * from `like` where author=#{userId}")
-    List<Like> likeList(@Param("userId") Long userId);
+    @Select("select * from `like` where author=#{userId} limit #{page},#{limit} ")
+    List<Like> likeList(@Param("page") int page, @Param("limit") int limit,@Param("userId") Long userId);
 }

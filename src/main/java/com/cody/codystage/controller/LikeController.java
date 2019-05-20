@@ -78,7 +78,7 @@ public class LikeController extends BaseApiService<Object> {
 
     }
 
-    @GetMapping(value = "/delete", params = {"type", "id"})
+    @DeleteMapping(value = "/delete", params = {"type", "id"})
     @ApiOperation(value = "用户取消点赞 type为帖子(1)或视频(2),id为帖子或视频的id (token yes)")
     public BaseResponse<Object> deleteLike(HttpServletRequest request, HttpServletResponse response) {
         commonService.checkIdAndType(request);
@@ -100,7 +100,7 @@ public class LikeController extends BaseApiService<Object> {
         return setResult(ResConstants.HTTP_RES_CODE_200, ResConstants.HTTP_RES_CODE_200_VALUE_1);
     }
 
-    @DeleteMapping(value = "/isLike", params = {"type", "id"})
+    @GetMapping(value = "/isLike", params = {"type", "id"})
     @ApiOperation(value = "用户是否点过赞 type为帖子(1)或视频(2),id为帖子或视频的id (token yes)")
     public BaseResponse<Object> isLike(HttpServletRequest request, HttpServletResponse response) {
         commonService.checkIdAndType(request);
@@ -115,11 +115,15 @@ public class LikeController extends BaseApiService<Object> {
         }
     }
 
-    @GetMapping(value = "/likeList")
+    @GetMapping(value = "/likeList", params = {"page", "limit"})
     @ApiOperation(value = "用户点赞列表 (token yes)")
     public BaseResponse<Object> likeList(HttpServletRequest request, HttpServletResponse response) {
+        commonService.checkPageAndLimit(request);
+
+        int page = RequestUtil.getInt(request, "page", 1);
+        int limit = RequestUtil.getInt(request, "limit", 10);
         Long userId = JwtTokenUtil.getUserId(request);
-        Map<String,Object> resMap = likeService.likeList(userId);
+        Map<String,Object> resMap = likeService.likeList((page - 1) * limit, limit,userId);
 
         return setResultSuccess(resMap);
     }

@@ -5,6 +5,7 @@ import com.cody.codystage.bean.po.Post;
 import com.cody.codystage.mapper.PostMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.Map;
  */
 @Service
 @Slf4j
+@Transactional
 public class PostService {
 
     @Resource

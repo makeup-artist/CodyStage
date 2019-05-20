@@ -8,6 +8,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -21,6 +22,7 @@ import java.util.Map;
  */
 @Service
 @Slf4j
+@Transactional
 public class LikeService {
 
     @Resource
@@ -44,24 +46,30 @@ public class LikeService {
         likeMapper.deleteLike(like);
     }
 
-    public Map<String,Object> likeList(Long userId) {
-        Map<String,Object> resMap= Maps.newHashMap();
+    public Map<String, Object> likeList(int page, int limit, Long userId) {
+        Map<String, Object> resMap = Maps.newHashMap();
 
-        List<Like> likes = likeMapper.likeList(userId);
+        List<Like> likes = likeMapper.likeList(page, limit, userId);
         List<Integer> postList = Lists.newArrayList();
         List<Integer> videoList = Lists.newArrayList();
         likes.forEach(e -> {
-            if(e.getType()==1){
+            if (e.getType() == 1) {
                 postList.add(e.getBelong());
-            }else{
+            } else {
                 videoList.add(e.getBelong());
             }
         });
 
-        List<Post> posts = postService.selectPostByList(postList);
-        List<Video> videos = videoService.selectVideoByList(videoList);
-        resMap.put("posts",posts);
-        resMap.put("videos",videos);
+        List<Post> posts = null;
+        List<Video> videos = null;
+        if (!postList.isEmpty()) {
+            posts = postService.selectPostByList(postList);
+        }
+        if (!videoList.isEmpty()) {
+            videos = videoService.selectVideoByList(videoList);
+        }
+        resMap.put("posts", posts);
+        resMap.put("videos", videos);
 
         return resMap;
     }
