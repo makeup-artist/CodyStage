@@ -1,6 +1,10 @@
 package com.cody.codystage.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @Classname OrderMapper
@@ -12,4 +16,5 @@ import org.apache.ibatis.annotations.Mapper;
 public interface OrderMapper {
 
 
+    Integer addOrder(List<Map<String, Object>> list);
 }

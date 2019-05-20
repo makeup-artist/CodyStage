@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cody.codystage.mapper.PictureMapper">
+
+    <insert id="addOrder" >
+        insert into `order`(order_id,client,number,goods_id)
+        values
+        <if test="list != null">
+            <foreach collection="list"  item="item"   separator=",">
+                (#{item.order_id},#{item.client},#{item.number},#{item.goods_id})
+            </foreach>
+        </if>
+    </insert>
+</mapper>

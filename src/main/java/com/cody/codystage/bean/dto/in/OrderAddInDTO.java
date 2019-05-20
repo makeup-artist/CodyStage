@@ -5,8 +5,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,5 +20,5 @@ public class OrderAddInDTO {
 
     @ApiModelProperty(value = "Map里面key为商品id(int)，value为商品数量(int)",required=true)
     @NotNull(message = "不能为空")
-    private List<Map<Integer, Integer>> orderList;
+    private Map<Object, Object> orderMap;
 }

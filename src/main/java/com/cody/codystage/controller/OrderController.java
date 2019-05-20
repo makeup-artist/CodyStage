@@ -1,6 +1,6 @@
 package com.cody.codystage.controller;
 
-import com.cody.codystage.bean.dto.in.PostAddInDTO;
+import com.cody.codystage.bean.dto.in.OrderAddInDTO;
 import com.cody.codystage.common.base.BaseApiService;
 import com.cody.codystage.common.base.BaseResponse;
 import com.cody.codystage.common.constants.ResConstants;
@@ -11,16 +11,13 @@ import com.cody.codystage.utils.RequestUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.util.List;
+import javax.validation.constraints.NotNull;
 import java.util.Map;
 
 /**
@@ -56,11 +53,10 @@ public class OrderController extends BaseApiService<Object> {
 
     @PostMapping("/add")
     @ApiOperation(value = "增加订单 (token yes)")
-    public BaseResponse<Object> addOrder(@Valid PostAddInDTO postAddInDTO, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response) {
-        commonService.checkDto(bindingResult);
+    public BaseResponse<Object> addOrder(@RequestBody Map<Integer,Integer> orderMap, HttpServletRequest request, HttpServletResponse response) {
 
         Long userId = JwtTokenUtil.getUserId(request);
-        Integer res = orderService.addOrder(userId, postAddInDTO);
+        Integer res = orderService.addOrder(userId, orderMap);
         if (res > 0) {
             return setResult(ResConstants.HTTP_RES_CODE_200, ResConstants.HTTP_RES_CODE_200_VALUE_1);
         } else {
