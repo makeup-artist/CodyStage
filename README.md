@@ -13,7 +13,7 @@
 
 ----------
 
-#### [Swagger API文档](http://apawn.top:8888/swagger-ui.html)
+#### [Swagger API文档](https://cody.apawn.top/swagger-ui.html)
 + 为了方便文档生成，皆定义DTO
 + 页面右上方Authority加入token，即可在所有请求中加入token
 
