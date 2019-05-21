@@ -13,9 +13,8 @@
 
 ----------
 
-#### Swagger API文档
+#### [Swagger API文档](http://apawn.top:8888/swagger-ui.html)
 + 为了方便文档生成，皆定义DTO
-+ 地址http://apawn.top:8888/swagger-ui.html (加载巨慢,做好心理准备)
 + 页面右上方Authority加入token，即可在所有请求中加入token
 
 ----------
