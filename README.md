@@ -3,7 +3,7 @@
 [![GitHub release](https://img.shields.io/badge/release-download-orange.svg)](https://rocketmq.apache.org/dowloading/releases)
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
-**[Cody Stage](https://github.com/makeup-artist/codystage) cody的后端,为cody带来持续续航.**
+**[Cody Stage](https://github.com/makeup-artist/codystage) cody's back-end program,bring cody continuous battery life**
 
 ### 基础设施搭建
 #### spring security+jwt
@@ -35,6 +35,8 @@
 ----------
 
 ### 中间件
-+ 使用阿里云的对象存储，存储上传的图片及视频,有条件开启CDN
++ 使用阿里云oss，存储上传的图片及视频,高频访问开启CDN
 
-
+----------
+## License
+[Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html) Copyright (C) Apache Software Foundation
