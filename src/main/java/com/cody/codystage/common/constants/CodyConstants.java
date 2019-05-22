@@ -11,6 +11,6 @@ public interface CodyConstants {
     /**
      * aliyun oss bucket name
      */
-    String IMAGE_BUCKETNAME="imagecodystage";
-    String VIDEO_BUCKETNAME="videocodystage";
+    String IMAGE_BUCKETNAME="imageszcody";
+    String VIDEO_BUCKETNAME="videoszcody";
 }

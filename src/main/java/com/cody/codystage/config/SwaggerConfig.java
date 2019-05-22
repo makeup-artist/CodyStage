@@ -1,5 +1,6 @@
 package com.cody.codystage.config;
 
+import com.google.common.base.Predicates;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,19 +24,21 @@ public class SwaggerConfig {
     @Value(value = "${swagger.enabled}")
     Boolean swaggerEnabled;
 
+    @Value(value = "${swagger.base.url}")
+    String swaggerBaseUrl;
+
     @Bean
     public Docket createRestApi() {
         return new Docket(DocumentationType.SWAGGER_2)
+                .host(swaggerBaseUrl)
                 .useDefaultResponseMessages(false)
                 .apiInfo(apiInfo())
                 // 是否开启
                 .enable(swaggerEnabled)
                 .select()
-                .paths(PathSelectors.regex("^(?!auth).*$"))
-                // 扫描的路径包
                 .apis(RequestHandlerSelectors.any())
-                // 指定路径处理PathSelectors.any()代表所有的路径
-                .paths(PathSelectors.any())
+                .paths(Predicates.not(PathSelectors.regex("/error.*")))//错误路径不监控
+                .paths(PathSelectors.regex("/.*"))// 对根下所有路径进行监控
                 .build()
                 .pathMapping("/")
                 .securitySchemes(securitySchemes())
@@ -44,9 +47,9 @@ public class SwaggerConfig {
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("codyStage")
+                .title("CodyStage")
                 .description("Cody backStage")
-                .contact(new Contact("zq", "https://github.com/makeup-artist", "1012872209@qq.com"))
+                .contact(new Contact("cody", "https://github.com/makeup-artist", "1012872209@qq.com"))
                 .version("1.0.0")
                 .build();
     }

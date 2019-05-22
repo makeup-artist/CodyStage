@@ -1,6 +1,5 @@
 package com.cody.codystage.config;
 
-import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
@@ -15,6 +14,7 @@ import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
+
 /**
  * @Classname RedisConfiguration
  * @Description TODO

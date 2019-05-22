@@ -1,3 +1,9 @@
+
+
+
+CREATE DATABASE `cody` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin */;
+
+
 CREATE TABLE if not exists `user`
 (
     `id`          bigint unsigned                            NOT NULL COMMENT '用户id',
