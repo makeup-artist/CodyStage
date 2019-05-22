@@ -35,7 +35,7 @@ import java.util.Objects;
 @Service
 @Slf4j
 @Transactional
-public class UserService  {
+public class UserService {
 
     @Autowired
     private UserMapper userMapper;
@@ -59,7 +59,7 @@ public class UserService  {
 
         //用户名加盐加密
         String password = user.getPassword();
-        user.setPassword(MD5Util.getSaltMD5(password,salt));
+        user.setPassword(MD5Util.getSaltMD5(password, salt));
 
         //spring security加密密码
 //        user.setPassword(bCryptPasswordEncoder.encode(password));
@@ -75,13 +75,12 @@ public class UserService  {
 
         //同时插往数据库和redis
         userMapper.register(user);
-        redisService.set(RedisConstants.USERINFO+user.getId(), JSONObject.toJSONString(user, SerializerFeature.WriteNullStringAsEmpty));
+        redisService.set(RedisConstants.USERINFO + user.getId(), JSONObject.toJSONString(user, SerializerFeature.WriteNullStringAsEmpty));
 
         return JwtTokenUtil.createToken(user.getId(), user.getRole(), true);
     }
 
     /**
-     *
      * @param username
      * @return true 代表不重复
      */
@@ -89,7 +88,29 @@ public class UserService  {
         try {
 
             User user = userMapper.queryUserByName(username);
-            System.out.println(user);
+            return Objects.isNull(user);
+        } catch (Exception e) {
+            log.error("查询用户失败,mag= ", e);
+            throw new ServiceException(ResConstants.HTTP_RES_CODE_500, "查询用户失败");
+        }
+    }
+
+    public String getCode(String mobile) {
+        String key = "message:" + mobile;
+        if ( !Objects.isNull(redisService.get(key))||(redisService.getExpire(key) < 4 * 60)){
+            throw new ServiceException(ResConstants.HTTP_RES_CODE_1225, ResConstants.HTTP_RES_CODE_1225_VALUE);
+        }
+
+        return null;
+    }
+
+    /**
+     * @param mobile
+     * @return true 代表不重复
+     */
+    public Boolean checkMobileRepeat(String mobile) {
+        try {
+            User user = userMapper.queryUserByMobile(mobile);
             return Objects.isNull(user);
         } catch (Exception e) {
             log.error("查询用户失败,mag= ", e);
@@ -109,9 +130,9 @@ public class UserService  {
 
     public User getUserInfo(Long id) {
         try {
-            String key=RedisConstants.USERINFO+id;
-            User user = JSON.parseObject((String) redisService.get(key),User.class);
-            if(Objects.isNull(user)){
+            String key = RedisConstants.USERINFO + id;
+            User user = JSON.parseObject((String) redisService.get(key), User.class);
+            if (Objects.isNull(user)) {
                 user = userMapper.queryUserById(id);
             }
             return user;
@@ -121,45 +142,45 @@ public class UserService  {
         }
     }
 
-    public User updateUserInfo(Long userId,UserUpdateDTO user){
-        if(userMapper.update(userId, user)==0){
+    public User updateUserInfo(Long userId, UserUpdateDTO user) {
+        if (userMapper.update(userId, user) == 0) {
             throw new ServiceException(ResConstants.HTTP_RES_CODE_1209, ResConstants.HTTP_RES_CODE_1209_VALUE);
         }
         User userInfo = getUserInfo(user.getUsername());
-        redisService.set(RedisConstants.USERINFO+userInfo.getId(), JSONObject.toJSONString(userInfo, SerializerFeature.WriteNullStringAsEmpty));
+        redisService.set(RedisConstants.USERINFO + userInfo.getId(), JSONObject.toJSONString(userInfo, SerializerFeature.WriteNullStringAsEmpty));
         return userInfo;
     }
 
-    public String login(UserLoginDTO userLoginDTO){
+    public String login(UserLoginDTO userLoginDTO) {
 
         String password = userLoginDTO.getPassword();
-        userLoginDTO.setPassword(MD5Util.getSaltMD5(password,salt));
+        userLoginDTO.setPassword(MD5Util.getSaltMD5(password, salt));
         User user = userMapper.login(userLoginDTO.getUsername(), userLoginDTO.getPassword());
 
-        if(Objects.isNull(user)){
+        if (Objects.isNull(user)) {
             return null;
-        }else {
+        } else {
             return JwtTokenUtil.createToken(user.getId(), user.getRole(), true);
         }
     }
 
-    public Boolean alterPassword(UserAlterDTO userAlterDTO){
+    public Boolean alterPassword(UserAlterDTO userAlterDTO) {
 
-        userAlterDTO.setNewPassword(MD5Util.getSaltMD5(userAlterDTO.getNewPassword(),salt));
-        userAlterDTO.setOldPassword(MD5Util.getSaltMD5(userAlterDTO.getOldPassword(),salt));
+        userAlterDTO.setNewPassword(MD5Util.getSaltMD5(userAlterDTO.getNewPassword(), salt));
+        userAlterDTO.setOldPassword(MD5Util.getSaltMD5(userAlterDTO.getOldPassword(), salt));
 
-        User user = userMapper.login(userAlterDTO.getUsername(),userAlterDTO.getOldPassword());
+        User user = userMapper.login(userAlterDTO.getUsername(), userAlterDTO.getOldPassword());
 
-        if(Objects.isNull(user)){
-            throw new ServiceException(ResConstants.HTTP_RES_CODE_1205,ResConstants.HTTP_RES_CODE_1205_VALUE);
+        if (Objects.isNull(user)) {
+            throw new ServiceException(ResConstants.HTTP_RES_CODE_1205, ResConstants.HTTP_RES_CODE_1205_VALUE);
         }
 
-        Integer integer = userMapper.alterPassword(userAlterDTO.getUsername(),userAlterDTO.getNewPassword());
-        if(integer==1){
+        Integer integer = userMapper.alterPassword(userAlterDTO.getUsername(), userAlterDTO.getNewPassword());
+        if (integer == 1) {
             User userInfo = userMapper.queryUserByName(userAlterDTO.getUsername());
-            redisService.set(RedisConstants.USERINFO+userInfo.getId(), JSONObject.toJSONString(userInfo, SerializerFeature.WriteNullStringAsEmpty));
+            redisService.set(RedisConstants.USERINFO + userInfo.getId(), JSONObject.toJSONString(userInfo, SerializerFeature.WriteNullStringAsEmpty));
             return true;
-        }else {
+        } else {
             return false;
         }
     }

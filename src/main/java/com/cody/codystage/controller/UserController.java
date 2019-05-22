@@ -13,6 +13,7 @@ import com.cody.codystage.common.exception.ServiceException;
 import com.cody.codystage.service.UserService;
 import com.cody.codystage.utils.CodyBeanUtils;
 import com.cody.codystage.utils.JwtTokenUtil;
+import com.cody.codystage.utils.RegexUtil;
 import com.cody.codystage.utils.RequestUtil;
 import com.google.common.collect.Maps;
 import io.swagger.annotations.*;
@@ -41,9 +42,9 @@ public class UserController extends BaseApiService<Object> {
     UserService userService;
 
 
-    @PostMapping("/register")
+    @PostMapping("/register/tradition")
     @ApiOperation(value = "用户注册")
-    public BaseResponse<Object> addUser(@Valid UserInputDTO userInputDTO, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response) {
+    public BaseResponse<Object> addUserTradition(@Valid UserInputDTO userInputDTO, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response) {
         HashMap<Object, Object> resMap = Maps.newHashMap();
         if (bindingResult.hasErrors()) {
             throw new ServiceException(ResConstants.HTTP_RES_CODE_1206, ResConstants.HTTP_RES_CODE_1206_VALUE);
@@ -51,33 +52,62 @@ public class UserController extends BaseApiService<Object> {
         User user = CodyBeanUtils.beanCopyPropertoes(userInputDTO, User.class);
         String token = userService.userRegister(user, response);
         UserOutDTO userOutDTO = CodyBeanUtils.beanCopyPropertoes(user, UserOutDTO.class);
-        resMap.put("token",token);
-        resMap.put("userInfo",userOutDTO);
+        resMap.put("token", token);
+        resMap.put("userInfo", userOutDTO);
         return setResult(ResConstants.HTTP_RES_CODE_200, "注册成功", resMap);
     }
 
-    @GetMapping(value = "/register/check", params = "username")
+    @GetMapping(value = "/code", params = "mobile")
+    @ApiOperation(value = "获取验证码")
+    public BaseResponse<Object> getCode(HttpServletRequest request, HttpServletResponse response) {
+        String mobile = RequestUtil.getString(request, "mobile", "");
+        if (!RegexUtil.checkMobile(mobile)) {
+            return setResultError(ResConstants.HTTP_RES_CODE_1224, ResConstants.HTTP_RES_CODE_1224_VALUE);
+        }
+        userService.getCode(mobile);
+        return null;
+
+    }
+
+
+    @GetMapping(value = "/check/username", params = "username")
     @ApiOperation(value = "用户名重复检测", notes = "返回0代表无重复")
     public BaseResponse<Object> checkUsername(HttpServletRequest request, HttpServletResponse response) {
 
         String username = RequestUtil.getString(request, "username", "");
         Boolean isRepeat = userService.checkUsernameRepeat(username);
         if (isRepeat) {
-            return setResultError(ResConstants.HTTP_RES_CODE_1207,ResConstants.HTTP_RES_CODE_1207_VALUE);
+            return setResultError(ResConstants.HTTP_RES_CODE_1207, ResConstants.HTTP_RES_CODE_1207_VALUE);
         } else {
-            return setResultError(ResConstants.HTTP_RES_CODE_1208,ResConstants.HTTP_RES_CODE_1208_VALUE);
+            return setResultError(ResConstants.HTTP_RES_CODE_1208, ResConstants.HTTP_RES_CODE_1208_VALUE);
         }
     }
 
+    @GetMapping(value = "/check/mobile", params = "mobile")
+    @ApiOperation(value = "手机号重复检测", notes = "返回0代表无重复")
+    public BaseResponse<Object> checkMobile(HttpServletRequest request, HttpServletResponse response) {
+        String mobile = RequestUtil.getString(request, "mobile", "");
+        if (!RegexUtil.checkMobile(mobile)) {
+            return setResultError(ResConstants.HTTP_RES_CODE_1224, ResConstants.HTTP_RES_CODE_1224_VALUE);
+        }
+        Boolean isRepeat = userService.checkMobileRepeat(mobile);
+        if (isRepeat) {
+            return setResultError(ResConstants.HTTP_RES_CODE_1222, ResConstants.HTTP_RES_CODE_1222_VALUE);
+        } else {
+            return setResultError(ResConstants.HTTP_RES_CODE_1223, ResConstants.HTTP_RES_CODE_1223_VALUE);
+        }
+    }
+
+
     @GetMapping(value = "/userInfo/username", params = "username")
     @ApiOperation(value = "根据用户名查询用户信息")
-    public UserOutDTO getUserInfoByName(HttpServletRequest request,HttpServletResponse response) {
-        if(request.getParameter("username").isEmpty()){
+    public UserOutDTO getUserInfoByName(HttpServletRequest request, HttpServletResponse response) {
+        if (request.getParameter("username").isEmpty()) {
             throw new ServiceException(ResConstants.HTTP_RES_CODE_1206, ResConstants.HTTP_RES_CODE_1206_VALUE);
         }
         String username = RequestUtil.getString(request, "username", "");
         User userInfo = userService.getUserInfo(username);
-        if(Objects.isNull(userInfo)){
+        if (Objects.isNull(userInfo)) {
             throw new ServiceException(ResConstants.HTTP_RES_CODE_1202, ResConstants.HTTP_RES_CODE_1202_VALUE);
         }
         return CodyBeanUtils.beanCopyPropertoes(userInfo, UserOutDTO.class);
@@ -86,66 +116,66 @@ public class UserController extends BaseApiService<Object> {
     @GetMapping(value = "/userInfo/id", params = "id")
     @ApiOperation(value = "根据用户ID查询用户信息")
     public UserOutDTO getUserInfoById(HttpServletRequest request) {
-        if(request.getParameter("id").isEmpty()){
+        if (request.getParameter("id").isEmpty()) {
             throw new ServiceException(ResConstants.HTTP_RES_CODE_401, ResConstants.HTTP_RES_CODE_401_VALUE);
         }
 
         Long id = RequestUtil.getLong(request, "id", 0L);
         User userInfo = userService.getUserInfo(id);
 
-        if(Objects.isNull(userInfo)){
+        if (Objects.isNull(userInfo)) {
             throw new ServiceException(ResConstants.HTTP_RES_CODE_1202, ResConstants.HTTP_RES_CODE_1202_VALUE);
         }
         return CodyBeanUtils.beanCopyPropertoes(userInfo, UserOutDTO.class);
     }
 
     @PostMapping(value = "/update")
-    @ApiOperation(value = "用户更改用户信息")
-    public BaseResponse<Object> updateUserInfoByName(@Valid UserUpdateDTO inputDTO, BindingResult bindingResult, HttpServletRequest request){
+    @ApiOperation(value = "用户更改用户信息 (Token yes)")
+    public BaseResponse<Object> updateUserInfoByName(@Valid UserUpdateDTO inputDTO, BindingResult bindingResult, HttpServletRequest request) {
 
         if (bindingResult.hasErrors()) {
             throw new ServiceException(ResConstants.HTTP_RES_CODE_1206, ResConstants.HTTP_RES_CODE_1206_VALUE);
         }
 
         Long userId = JwtTokenUtil.getUserId(request);
-        if(inputDTO.getUsername().equals(userService.getUserInfo(userId).getUsername()) || userService.checkUsernameRepeat(inputDTO.getUsername())){
+        if (inputDTO.getUsername().equals(userService.getUserInfo(userId).getUsername()) || userService.checkUsernameRepeat(inputDTO.getUsername())) {
             User userInfo = userService.updateUserInfo(userId, inputDTO);
-            return setResult(ResConstants.HTTP_RES_CODE_200,"修改信息成功",CodyBeanUtils.beanCopyPropertoes(userInfo, UserOutDTO.class));
-        }else {
-            return setResultError(ResConstants.HTTP_RES_CODE_1208,ResConstants.HTTP_RES_CODE_1208_VALUE);
+            return setResult(ResConstants.HTTP_RES_CODE_200, "修改信息成功", CodyBeanUtils.beanCopyPropertoes(userInfo, UserOutDTO.class));
+        } else {
+            return setResultError(ResConstants.HTTP_RES_CODE_1208, ResConstants.HTTP_RES_CODE_1208_VALUE);
         }
 
     }
 
     @PostMapping(value = "/login")
     @ApiOperation(value = "客户端登录")
-    public BaseResponse<Object> login(@Valid UserLoginDTO inputDTO, BindingResult bindingResult, HttpServletRequest request){
+    public BaseResponse<Object> login(@Valid UserLoginDTO inputDTO, BindingResult bindingResult, HttpServletRequest request) {
 
         if (bindingResult.hasErrors()) {
             throw new ServiceException(ResConstants.HTTP_RES_CODE_1206, ResConstants.HTTP_RES_CODE_1206_VALUE);
         }
 
         String token = userService.login(inputDTO);
-        if(Objects.isNull(token)){
-            return setResultError(ResConstants.HTTP_RES_CODE_1205,ResConstants.HTTP_RES_CODE_1205_VALUE);
-        }else {
-            return setResult(ResConstants.HTTP_RES_CODE_200,"登录成功",token);
+        if (Objects.isNull(token)) {
+            return setResultError(ResConstants.HTTP_RES_CODE_1205, ResConstants.HTTP_RES_CODE_1205_VALUE);
+        } else {
+            return setResult(ResConstants.HTTP_RES_CODE_200, "登录成功", token);
         }
 
     }
 
     @PostMapping(value = "/AterPassword")
     @ApiOperation(value = "修改用户密码")
-    public BaseResponse<Object> alterPassword(@Valid UserAlterDTO userAlterDTO,BindingResult bindingResult,HttpServletRequest request){
+    public BaseResponse<Object> alterPassword(@Valid UserAlterDTO userAlterDTO, BindingResult bindingResult, HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
             throw new ServiceException(ResConstants.HTTP_RES_CODE_1206, ResConstants.HTTP_RES_CODE_1206_VALUE);
         }
 
         Boolean res = userService.alterPassword(userAlterDTO);
-        if(res){
+        if (res) {
             return setResultSuccess("修改密码成功");
-        }else {
-            return setResultError(ResConstants.HTTP_RES_CODE_1210,ResConstants.HTTP_RES_CODE_1210_VALUE);
+        } else {
+            return setResultError(ResConstants.HTTP_RES_CODE_1210, ResConstants.HTTP_RES_CODE_1210_VALUE);
         }
 
     }

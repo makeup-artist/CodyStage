@@ -29,6 +29,10 @@ public interface ResConstants {
     String HTTP_RES_CODE_1219_VALUE = "点过赞";
     String HTTP_RES_CODE_1220_VALUE = "帖子不存在";
     String HTTP_RES_CODE_1221_VALUE = "小视频不存在";
+    String HTTP_RES_CODE_1222_VALUE = "手机号可用";
+    String HTTP_RES_CODE_1223_VALUE = "手机号已注册";
+    String HTTP_RES_CODE_1224_VALUE = "手机号格式不正确";
+    String HTTP_RES_CODE_1225_VALUE = "60s秒内请勿重试";
 
     Integer HTTP_RES_CODE_200 = 200;
     Integer HTTP_RES_CODE_500 = 500;
@@ -56,4 +60,10 @@ public interface ResConstants {
     Integer HTTP_RES_CODE_1219 = 1219;
     Integer HTTP_RES_CODE_1220 = 1220;
     Integer HTTP_RES_CODE_1221 = 1221;
+    Integer HTTP_RES_CODE_1222 = 1222;
+    Integer HTTP_RES_CODE_1223 = 1223;
+    Integer HTTP_RES_CODE_1224 = 1224;
+    Integer HTTP_RES_CODE_1225 = 1225;
+    Integer HTTP_RES_CODE_1226 = 1226;
+    Integer HTTP_RES_CODE_1227 = 1227;
 }
