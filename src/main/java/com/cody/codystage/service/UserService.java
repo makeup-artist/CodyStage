@@ -8,15 +8,11 @@ import com.aliyuncs.CommonResponse;
 import com.aliyuncs.DefaultAcsClient;
 import com.aliyuncs.IAcsClient;
 import com.aliyuncs.exceptions.ClientException;
-import com.aliyuncs.exceptions.ServerException;
 import com.aliyuncs.http.MethodType;
 import com.aliyuncs.profile.DefaultProfile;
-import com.cody.codystage.bean.dto.in.UserLoginCodeInDTO;
+import com.cody.codystage.bean.dto.in.*;
 import com.cody.codystage.common.constants.RedisConstants;
 import com.cody.codystage.common.constants.ResConstants;
-import com.cody.codystage.bean.dto.in.UserAlterDTO;
-import com.cody.codystage.bean.dto.in.UserLoginDTO;
-import com.cody.codystage.bean.dto.in.UserUpdateDTO;
 import com.cody.codystage.bean.po.User;
 import com.cody.codystage.common.exception.ServiceException;
 import com.cody.codystage.mapper.UserMapper;
@@ -103,9 +99,14 @@ public class UserService {
         return JwtTokenUtil.createToken(user.getId(), user.getRole(), true);
     }
 
-    public Map<String, Object> userRegisterByCode(UserLoginCodeInDTO userInputDTO) {
+    public Map<String, Object> userRegisterByCode(UserRegisterCodeInDTO userInputDTO) {
         Map<String, Object> resMap = Maps.newHashMap();
         String key = "message:" + userInputDTO.getMobile();
+
+        Boolean checkRes = checkUsernameRepeat(userInputDTO.getUsername());
+        if (!checkRes) {
+            throw new ServiceException(ResConstants.HTTP_RES_CODE_1201, ResConstants.HTTP_RES_CODE_1201_VALUE);
+        }
 
         if (!checkMobileRepeat(userInputDTO.getMobile())) {
             throw new ServiceException(ResConstants.HTTP_RES_CODE_1226, ResConstants.HTTP_RES_CODE_1226_VALUE);
@@ -122,8 +123,8 @@ public class UserService {
             Long id = SnowflakeIdUtil.nextId();
             user.setId(id);
             user.setIsAvailable(0);
-            user.setUsername("用户" + id);
-            user.setPassword(MD5Util.getSaltMD5(id.toString(), salt));
+            user.setUsername(userInputDTO.getUsername());
+            user.setPassword(MD5Util.getSaltMD5(userInputDTO.getPassword(), salt));
             user.setCreateTime(DateUtil.getCurrentTimeStamp());
             user.setUpdateTime(DateUtil.getCurrentTimeStamp());
             user.setRole("ROLE_USER");
@@ -254,7 +255,7 @@ public class UserService {
         }
     }
 
-    public Map<String, Object> loginByCode(UserLoginCodeInDTO inputDTO) {
+    public Map<String, Object> loginByCode( UserLoginCodeInDTO inputDTO) {
         Map<String, Object> resMap = Maps.newHashMap();
         String key = "message:" + inputDTO.getMobile();
         Integer code = (Integer) redisService.get(key);
@@ -296,7 +297,7 @@ public class UserService {
         }
     }
 
-    public void updateMobile(UserLoginCodeInDTO userInputDTO,Long userId) {
+    public void updateMobile(UserRegisterCodeInDTO userInputDTO, Long userId) {
 
         if (!checkMobileRepeat(userInputDTO.getMobile())) {
             throw new ServiceException(ResConstants.HTTP_RES_CODE_1226, ResConstants.HTTP_RES_CODE_1226_VALUE);

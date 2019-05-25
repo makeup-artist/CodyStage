@@ -57,7 +57,7 @@ public class UserController extends BaseApiService<Object> {
 
     @PostMapping("/register/code")
     @ApiOperation(value = "手机验证码用户注册")
-    public BaseResponse<Object> addUserCode(@Valid UserLoginCodeInDTO userInputDTO, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response) {
+    public BaseResponse<Object> addUserCode(@Valid UserRegisterCodeInDTO userInputDTO, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> resMap;
         if (bindingResult.hasErrors()) {
             throw new ServiceException(ResConstants.HTTP_RES_CODE_1206, ResConstants.HTTP_RES_CODE_1206_VALUE);
@@ -203,7 +203,7 @@ public class UserController extends BaseApiService<Object> {
 
     @PutMapping(value = "/update/mobile")
     @ApiOperation(value = "用户更换手机号 (Token yes)")
-    public BaseResponse<Object> alterMobile(@Valid UserLoginCodeInDTO userInputDTO, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response){
+    public BaseResponse<Object> alterMobile(@Valid UserRegisterCodeInDTO userInputDTO, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response){
 
         if (bindingResult.hasErrors()) {
             throw new ServiceException(ResConstants.HTTP_RES_CODE_1206, ResConstants.HTTP_RES_CODE_1206_VALUE);

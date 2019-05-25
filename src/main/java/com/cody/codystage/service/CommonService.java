@@ -20,38 +20,44 @@ import javax.servlet.http.HttpServletRequest;
 @Transactional
 public class CommonService {
 
-    public void  checkDto(BindingResult bindingResult){
+    public void checkDto(BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new ServiceException(ResConstants.HTTP_RES_CODE_1206, bindingResult.toString());
         }
     }
 
-    public void checkPageAndLimit(HttpServletRequest request){
-        if(request.getParameter("page").isEmpty()|| request.getParameter("limit").isEmpty()){
+    public void checkPageAndLimit(HttpServletRequest request) {
+        if (request.getParameter("page").isEmpty() || request.getParameter("limit").isEmpty()) {
             throw new ServiceException(ResConstants.HTTP_RES_CODE_401, ResConstants.HTTP_RES_CODE_401_VALUE);
         }
     }
 
-    public void checkCondition(HttpServletRequest request){
-        if(request.getParameter("condition").isEmpty()|| request.getParameter("page").isEmpty()|| request.getParameter("limit").isEmpty()){
+    public void checkCondition(HttpServletRequest request) {
+        if (request.getParameter("condition").isEmpty() || request.getParameter("page").isEmpty() || request.getParameter("limit").isEmpty()) {
             throw new ServiceException(ResConstants.HTTP_RES_CODE_401, ResConstants.HTTP_RES_CODE_401_VALUE);
         }
     }
 
-    public void checkId(HttpServletRequest request){
-        if(request.getParameter("id").isEmpty()){
+    public void checkId(HttpServletRequest request) {
+        if (request.getParameter("id").isEmpty()) {
             throw new ServiceException(ResConstants.HTTP_RES_CODE_401, ResConstants.HTTP_RES_CODE_401_VALUE);
         }
     }
 
-    public void checkBelongAndType(HttpServletRequest request){
-        if(request.getParameter("belong").isEmpty() || request.getParameter("type").isEmpty()){
+    public void checkBelongAndType(HttpServletRequest request) {
+        if (request.getParameter("belong").isEmpty() || request.getParameter("type").isEmpty()) {
             throw new ServiceException(ResConstants.HTTP_RES_CODE_401, ResConstants.HTTP_RES_CODE_401_VALUE);
         }
     }
 
-    public void checkIdAndType(HttpServletRequest request){
-        if(request.getParameter("id").isEmpty() || request.getParameter("type").isEmpty()){
+    public void checkIdAndType(HttpServletRequest request) {
+        if (request.getParameter("id").isEmpty() || request.getParameter("type").isEmpty()) {
+            throw new ServiceException(ResConstants.HTTP_RES_CODE_401, ResConstants.HTTP_RES_CODE_401_VALUE);
+        }
+    }
+
+    public void checkBelong(HttpServletRequest request) {
+        if (request.getParameter("belong").isEmpty()) {
             throw new ServiceException(ResConstants.HTTP_RES_CODE_401, ResConstants.HTTP_RES_CODE_401_VALUE);
         }
     }
