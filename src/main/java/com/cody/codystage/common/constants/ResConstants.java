@@ -33,6 +33,9 @@ public interface ResConstants {
     String HTTP_RES_CODE_1223_VALUE = "手机号已注册";
     String HTTP_RES_CODE_1224_VALUE = "手机号格式不正确";
     String HTTP_RES_CODE_1225_VALUE = "60s秒内请勿重试";
+    String HTTP_RES_CODE_1226_VALUE = "手机号已注册";
+    String HTTP_RES_CODE_1227_VALUE = "验证码不正确";
+    String HTTP_RES_CODE_1228_VALUE = "验证码不存在或已过期";
 
     Integer HTTP_RES_CODE_200 = 200;
     Integer HTTP_RES_CODE_500 = 500;
@@ -66,4 +69,5 @@ public interface ResConstants {
     Integer HTTP_RES_CODE_1225 = 1225;
     Integer HTTP_RES_CODE_1226 = 1226;
     Integer HTTP_RES_CODE_1227 = 1227;
+    Integer HTTP_RES_CODE_1228 = 1228;
 }

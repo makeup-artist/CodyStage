@@ -3,6 +3,15 @@ package com.cody.codystage.service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.aliyuncs.CommonRequest;
+import com.aliyuncs.CommonResponse;
+import com.aliyuncs.DefaultAcsClient;
+import com.aliyuncs.IAcsClient;
+import com.aliyuncs.exceptions.ClientException;
+import com.aliyuncs.exceptions.ServerException;
+import com.aliyuncs.http.MethodType;
+import com.aliyuncs.profile.DefaultProfile;
+import com.cody.codystage.bean.dto.in.UserLoginCodeInDTO;
 import com.cody.codystage.common.constants.RedisConstants;
 import com.cody.codystage.common.constants.ResConstants;
 import com.cody.codystage.bean.dto.in.UserAlterDTO;
@@ -15,6 +24,7 @@ import com.cody.codystage.utils.DateUtil;
 import com.cody.codystage.utils.JwtTokenUtil;
 import com.cody.codystage.utils.MD5Util;
 import com.cody.codystage.utils.twitter.SnowflakeIdUtil;
+import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -46,10 +57,22 @@ public class UserService {
     @Value("${user.pwd.salt}")
     String salt;
 
+    @Value("${aliyun.message.accessKeyId}")
+    private String accessKeyId;
+
+    @Value("${aliyun.message.accessKeySecret}")
+    private String accessSecret;
+
+    @Value("${aliyun.message.SignName}")
+    private String SignName;
+
+    @Value("${aliyun.message.TemplateCode}")
+    private String TemplateCode;
+
 //    @Autowired
 //    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    @Transactional
+
     public String userRegister(User user, HttpServletResponse httpServletResponse) {
 
         user.setId(SnowflakeIdUtil.nextId());
@@ -80,6 +103,41 @@ public class UserService {
         return JwtTokenUtil.createToken(user.getId(), user.getRole(), true);
     }
 
+    public Map<String, Object> userRegisterByCode(UserLoginCodeInDTO userInputDTO) {
+        Map<String, Object> resMap = Maps.newHashMap();
+        String key = "message:" + userInputDTO.getMobile();
+
+        if (!checkMobileRepeat(userInputDTO.getMobile())) {
+            throw new ServiceException(ResConstants.HTTP_RES_CODE_1226, ResConstants.HTTP_RES_CODE_1226_VALUE);
+        }
+
+        Integer code = (Integer) redisService.get(key);
+
+        if (Objects.isNull(code)) {
+            throw new ServiceException(ResConstants.HTTP_RES_CODE_1228, ResConstants.HTTP_RES_CODE_1228_VALUE);
+        }
+
+        if (userInputDTO.getCode().equals(code.toString())) {
+            User user = new User();
+            Long id = SnowflakeIdUtil.nextId();
+            user.setId(id);
+            user.setIsAvailable(0);
+            user.setUsername("用户" + id);
+            user.setPassword(MD5Util.getSaltMD5(id.toString(), salt));
+            user.setCreateTime(DateUtil.getCurrentTimeStamp());
+            user.setUpdateTime(DateUtil.getCurrentTimeStamp());
+            user.setRole("ROLE_USER");
+            user.setMobile(userInputDTO.getMobile());
+            userMapper.registerByCode(user);
+            redisService.set(RedisConstants.USERINFO + user.getId(), JSONObject.toJSONString(user, SerializerFeature.WriteNullStringAsEmpty));
+            resMap.put("token", JwtTokenUtil.createToken(user.getId(), user.getRole(), true));
+            resMap.put("user", user);
+        } else {
+            throw new ServiceException(ResConstants.HTTP_RES_CODE_1227, ResConstants.HTTP_RES_CODE_1227_VALUE);
+        }
+        return resMap;
+    }
+
     /**
      * @param username
      * @return true 代表不重复
@@ -97,9 +155,41 @@ public class UserService {
 
     public String getCode(String mobile) {
         String key = "message:" + mobile;
-        if ( !Objects.isNull(redisService.get(key))||(redisService.getExpire(key) < 4 * 60)){
+        long expireTime = redisService.getExpire(key);
+        if (expireTime > 4 * 60) {
             throw new ServiceException(ResConstants.HTTP_RES_CODE_1225, ResConstants.HTTP_RES_CODE_1225_VALUE);
         }
+
+        DefaultProfile profile = DefaultProfile.getProfile("cn-hangzhou", accessKeyId, accessSecret);
+        IAcsClient client = new DefaultAcsClient(profile);
+        CommonRequest request = new CommonRequest();
+        request.setMethod(MethodType.POST);
+        request.setDomain("dysmsapi.aliyuncs.com");
+        request.setVersion("2017-05-25");
+        request.setAction("SendSms");
+        request.putQueryParameter("RegionId", "cn-hangzhou");
+        request.putQueryParameter("PhoneNumbers", mobile);
+        request.putQueryParameter("TemplateCode", TemplateCode);
+        request.putQueryParameter("SignName", SignName);
+
+//        随机产生规定范围内数字(1000,9999)
+        int num = (int) (Math.random() * 8998) + 1000 + 1;
+        JSONObject templateParam = new JSONObject();
+        templateParam.put("code", num);
+//        templateParam.toJSONString()
+        request.putQueryParameter("TemplateParam", templateParam.toJSONString());
+
+        CommonResponse response = null;
+        try {
+            response = client.getCommonResponse(request);
+        } catch (ClientException e) {
+            e.printStackTrace();
+        } finally {
+            if (Objects.requireNonNull(response).getHttpStatus() == 200) {
+                redisService.set(key, num, 5 * 60);
+            }
+        }
+
 
         return null;
     }
@@ -164,6 +254,27 @@ public class UserService {
         }
     }
 
+    public Map<String, Object> loginByCode(UserLoginCodeInDTO inputDTO) {
+        Map<String, Object> resMap = Maps.newHashMap();
+        String key = "message:" + inputDTO.getMobile();
+        Integer code = (Integer) redisService.get(key);
+
+        if (Objects.isNull(code)) {
+            throw new ServiceException(ResConstants.HTTP_RES_CODE_1228, ResConstants.HTTP_RES_CODE_1228_VALUE);
+        }
+        if (inputDTO.getCode().equals(code.toString())) {
+            User user = userMapper.queryUserByMobile(inputDTO.getMobile());
+            if (Objects.isNull(user)) {
+                throw new ServiceException(ResConstants.HTTP_RES_CODE_1202, ResConstants.HTTP_RES_CODE_1202_VALUE);
+            }
+            resMap.put("token", JwtTokenUtil.createToken(user.getId(), user.getRole(), true));
+            resMap.put("user", user);
+            return resMap;
+        } else {
+            throw new ServiceException(ResConstants.HTTP_RES_CODE_1227, ResConstants.HTTP_RES_CODE_1227_VALUE);
+        }
+    }
+
     public Boolean alterPassword(UserAlterDTO userAlterDTO) {
 
         userAlterDTO.setNewPassword(MD5Util.getSaltMD5(userAlterDTO.getNewPassword(), salt));
@@ -182,6 +293,23 @@ public class UserService {
             return true;
         } else {
             return false;
+        }
+    }
+
+    public void updateMobile(UserLoginCodeInDTO userInputDTO,Long userId) {
+
+        if (!checkMobileRepeat(userInputDTO.getMobile())) {
+            throw new ServiceException(ResConstants.HTTP_RES_CODE_1226, ResConstants.HTTP_RES_CODE_1226_VALUE);
+        }
+        String key = "message:" + userInputDTO.getMobile();
+        Integer code = (Integer) redisService.get(key);
+
+        if (Objects.isNull(code)) {
+            throw new ServiceException(ResConstants.HTTP_RES_CODE_1228, ResConstants.HTTP_RES_CODE_1228_VALUE);
+        } else {
+            userMapper.updateMobile(userId,userInputDTO.getMobile());
+            User user = userMapper.queryUserByMobile(userInputDTO.getMobile());
+            redisService.set(RedisConstants.USERINFO + user.getId(), JSONObject.toJSONString(user, SerializerFeature.WriteNullStringAsEmpty));
         }
     }
 

@@ -1,5 +1,6 @@
 package com.cody.codystage.service;
 
+import com.cody.codystage.bean.po.Order;
 import com.cody.codystage.mapper.OrderMapper;
 import com.cody.codystage.utils.twitter.SnowflakeIdUtil;
 import com.google.common.collect.Lists;
@@ -27,24 +28,36 @@ public class OrderService {
     private GoodsService goodsService;
 
     @Resource
+    private RedisService redisService;
+
+    @Resource
     private OrderMapper orderMapper;
 
-    public Map<String, Object> getOrderList(Long userId, Integer page, Integer limit) {
-        return null;
+    public List<Object> getOrderList(Long userId, Integer page, Integer limit) {
+        String key= "order:" + userId;
+        return redisService.lGet(key, page, limit);
     }
 
-    public Integer addOrder(Long userId, Map<Integer, Integer> orderMap) {
-        List<Map<String, Object>> orderList = Lists.newArrayList();
+    public void addOrder(Long userId, Map<Integer, Integer> orderMap) {
+        List<Integer> orderList = Lists.newArrayList();
 
         Long orderId = SnowflakeIdUtil.nextId();
-        orderMap.forEach((k,v) -> {
-            Map<String,Object> order= Maps.newHashMap();
-            order.put("order_id",orderId);
-            order.put("client",userId);
-            order.put("number",v);
-            order.put("goods_id",k);
-            orderList.add(order);
-        });
-        return orderMapper.addOrder(orderList);
+
+        orderMap.forEach((k, v) -> orderList.add(k));
+
+        double sum = 0.0;
+        List<Map<String, Object>> goodsDetailList = goodsService.getGoodsDetailByList(orderList);
+        for (Map<String, Object> map : goodsDetailList) {
+            Long id = (Long) map.get("id");
+            Integer num = orderMap.get(id.intValue());
+            sum += num * (Double) map.get("price");
+            map.put("num", num);
+        }
+
+        Order order = Order.builder().client(userId).order_id(orderId).money(sum).goods(goodsDetailList.toString()).build();
+        orderMapper.addOrder(order);
+        Map<String, Object> order1 = orderMapper.getOrder(orderId);
+        String key = "order:" + userId;
+        redisService.lSet(key, order1);
     }
 }

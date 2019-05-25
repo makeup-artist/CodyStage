@@ -23,6 +23,7 @@ public class VideoAddInDTO {
     @NotNull(message = "视频地址不能为空")
     private String url;
 
+
     @ApiModelProperty(value = "标题 长度<60",required=true)
     @Size(max = 60,message = "用标题长度不符合要求" )
     @NotNull(message = "标题不能为空")

@@ -16,6 +16,7 @@ public class Video {
     private Integer id;
     private Long author;
     private String url;
+    private String cover;
     private String title;
     private Integer star;
     private Timestamp createTime;

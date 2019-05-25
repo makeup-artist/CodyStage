@@ -18,6 +18,9 @@ public interface UserMapper {
             "#{updateTime},#{createTime},#{isAvailable},#{gender},#{tag},#{email},#{role});")
     Integer register(User user);
 
+    @Insert("insert into `user`(id,username,password,mobile,updateTime,createTime,isAvailable,role) values(#{id},#{username},#{password},#{mobile},#{updateTime},#{createTime},#{isAvailable},#{role})")
+    Integer registerByCode(User user);
+
     User queryUserByName(@Param("username") String username);
 
     User queryUserById(@Param("id") Long id);
@@ -30,6 +33,8 @@ public interface UserMapper {
             "where id=#{userId}")
     Integer update(@Param("userId") Long userId, UserUpdateDTO user);
 
+    @Update("update `user` set mobile=#{mobile} where id=#{userId}")
+    void updateMobile(@Param("userId") Long userId,@Param("mobile") String mobile);
 
     @Update("update `user` set password=#{password} where username=#{username}")
     Integer alterPassword(@Param("username") String username, @Param("password") String password);

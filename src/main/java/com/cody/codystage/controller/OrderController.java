@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -47,20 +48,17 @@ public class OrderController extends BaseApiService<Object> {
         int page = RequestUtil.getInt(request, "page", 1);
         int limit = RequestUtil.getInt(request, "limit", 10);
 
-        Map<String, Object> resMap = orderService.getOrderList(userId, page, limit);
-        return setResult(ResConstants.HTTP_RES_CODE_200, ResConstants.HTTP_RES_CODE_200_VALUE_1, resMap);
+        List<Object> orderList = orderService.getOrderList(userId, (page - 1) * limit, limit-1);
+        return setResult(ResConstants.HTTP_RES_CODE_200, ResConstants.HTTP_RES_CODE_200_VALUE_1, orderList);
     }
 
     @PostMapping("/add")
     @ApiOperation(value = "增加订单 (token yes)")
-    public BaseResponse<Object> addOrder(@RequestBody Map<Integer,Integer> orderMap, HttpServletRequest request, HttpServletResponse response) {
+    public BaseResponse<Object> addOrder(@RequestBody Map<Integer, Integer> orderMap, HttpServletRequest request, HttpServletResponse response) {
 
         Long userId = JwtTokenUtil.getUserId(request);
-        Integer res = orderService.addOrder(userId, orderMap);
-        if (res > 0) {
-            return setResult(ResConstants.HTTP_RES_CODE_200, ResConstants.HTTP_RES_CODE_200_VALUE_1);
-        } else {
-            return setResult(ResConstants.HTTP_RES_CODE_1216, ResConstants.HTTP_RES_CODE_1216_VALUE);
-        }
+        orderService.addOrder(userId, orderMap);
+
+        return setResult(ResConstants.HTTP_RES_CODE_200, ResConstants.HTTP_RES_CODE_200_VALUE_1);
     }
 }
