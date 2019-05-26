@@ -63,7 +63,7 @@ public class UserController extends BaseApiService<Object> {
             throw new ServiceException(ResConstants.HTTP_RES_CODE_1206, ResConstants.HTTP_RES_CODE_1206_VALUE);
         }
 
-        resMap=userService.userRegisterByCode(userInputDTO);
+        resMap = userService.userRegisterByCode(userInputDTO);
         return setResult(ResConstants.HTTP_RES_CODE_200, "注册成功", resMap);
     }
 
@@ -74,8 +74,8 @@ public class UserController extends BaseApiService<Object> {
         if (!RegexUtil.checkMobile(mobile)) {
             return setResultError(ResConstants.HTTP_RES_CODE_1224, ResConstants.HTTP_RES_CODE_1224_VALUE);
         }
-        userService.getCode(mobile);
-        return setResult(ResConstants.HTTP_RES_CODE_200, "发送成功");
+        String res = userService.getCode(mobile);
+        return setResult(ResConstants.HTTP_RES_CODE_200, "发送成功", res);
 
     }
 
@@ -165,12 +165,8 @@ public class UserController extends BaseApiService<Object> {
             throw new ServiceException(ResConstants.HTTP_RES_CODE_1206, ResConstants.HTTP_RES_CODE_1206_VALUE);
         }
 
-        String token = userService.login(inputDTO);
-        if (Objects.isNull(token)) {
-            return setResultError(ResConstants.HTTP_RES_CODE_1205, ResConstants.HTTP_RES_CODE_1205_VALUE);
-        } else {
-            return setResult(ResConstants.HTTP_RES_CODE_200, "登录成功", token);
-        }
+        Map<String, Object> resMap = userService.login(inputDTO);
+        return setResult(ResConstants.HTTP_RES_CODE_200, "登录成功", resMap);
 
     }
 
@@ -203,13 +199,13 @@ public class UserController extends BaseApiService<Object> {
 
     @PutMapping(value = "/update/mobile")
     @ApiOperation(value = "用户更换手机号 (Token yes)")
-    public BaseResponse<Object> alterMobile(@Valid UserRegisterCodeInDTO userInputDTO, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response){
+    public BaseResponse<Object> alterMobile(@Valid UserRegisterCodeInDTO userInputDTO, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response) {
 
         if (bindingResult.hasErrors()) {
             throw new ServiceException(ResConstants.HTTP_RES_CODE_1206, ResConstants.HTTP_RES_CODE_1206_VALUE);
         }
         Long userId = JwtTokenUtil.getUserId(request);
-        userService.updateMobile(userInputDTO,userId);
+        userService.updateMobile(userInputDTO, userId);
         return setResultSuccess("更换手机号成功");
     }
 

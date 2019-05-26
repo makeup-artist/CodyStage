@@ -11,11 +11,13 @@ import com.aliyuncs.exceptions.ClientException;
 import com.aliyuncs.http.MethodType;
 import com.aliyuncs.profile.DefaultProfile;
 import com.cody.codystage.bean.dto.in.*;
+import com.cody.codystage.bean.dto.out.UserOutDTO;
 import com.cody.codystage.common.constants.RedisConstants;
 import com.cody.codystage.common.constants.ResConstants;
 import com.cody.codystage.bean.po.User;
 import com.cody.codystage.common.exception.ServiceException;
 import com.cody.codystage.mapper.UserMapper;
+import com.cody.codystage.utils.CodyBeanUtils;
 import com.cody.codystage.utils.DateUtil;
 import com.cody.codystage.utils.JwtTokenUtil;
 import com.cody.codystage.utils.MD5Util;
@@ -181,18 +183,23 @@ public class UserService {
         request.putQueryParameter("TemplateParam", templateParam.toJSONString());
 
         CommonResponse response = null;
+        JSONObject jsonObject;
         try {
             response = client.getCommonResponse(request);
         } catch (ClientException e) {
             e.printStackTrace();
         } finally {
-            if (Objects.requireNonNull(response).getHttpStatus() == 200) {
+            assert response != null;
+            jsonObject = JSON.parseObject(response.getData());
+            if ("OK".equals(jsonObject.get("Code"))) {
                 redisService.set(key, num, 5 * 60);
+            }else{
+                throw new ServiceException(ResConstants.HTTP_RES_CODE_400, (String) jsonObject.get("Message"));
             }
         }
 
 
-        return null;
+        return (String) jsonObject.get("Message");
     }
 
     /**
@@ -242,20 +249,24 @@ public class UserService {
         return userInfo;
     }
 
-    public String login(UserLoginDTO userLoginDTO) {
+    public Map<String,Object> login(UserLoginDTO userLoginDTO) {
+        Map<String,Object> resMap=Maps.newHashMap();
 
         String password = userLoginDTO.getPassword();
         userLoginDTO.setPassword(MD5Util.getSaltMD5(password, salt));
         User user = userMapper.login(userLoginDTO.getUsername(), userLoginDTO.getPassword());
+        UserOutDTO userOutDTO = CodyBeanUtils.beanCopyPropertoes(user, UserOutDTO.class);
 
         if (Objects.isNull(user)) {
-            return null;
+            throw new ServiceException(ResConstants.HTTP_RES_CODE_1202, ResConstants.HTTP_RES_CODE_1202_VALUE);
         } else {
-            return JwtTokenUtil.createToken(user.getId(), user.getRole(), true);
+            resMap.put("token", JwtTokenUtil.createToken(user.getId(), user.getRole(), true));
+            resMap.put("user", userOutDTO);
         }
+        return resMap;
     }
 
-    public Map<String, Object> loginByCode( UserLoginCodeInDTO inputDTO) {
+    public Map<String, Object> loginByCode(UserLoginCodeInDTO inputDTO) {
         Map<String, Object> resMap = Maps.newHashMap();
         String key = "message:" + inputDTO.getMobile();
         Integer code = (Integer) redisService.get(key);
@@ -265,11 +276,12 @@ public class UserService {
         }
         if (inputDTO.getCode().equals(code.toString())) {
             User user = userMapper.queryUserByMobile(inputDTO.getMobile());
+            UserOutDTO userOutDTO = CodyBeanUtils.beanCopyPropertoes(user, UserOutDTO.class);
             if (Objects.isNull(user)) {
                 throw new ServiceException(ResConstants.HTTP_RES_CODE_1202, ResConstants.HTTP_RES_CODE_1202_VALUE);
             }
             resMap.put("token", JwtTokenUtil.createToken(user.getId(), user.getRole(), true));
-            resMap.put("user", user);
+            resMap.put("user", userOutDTO);
             return resMap;
         } else {
             throw new ServiceException(ResConstants.HTTP_RES_CODE_1227, ResConstants.HTTP_RES_CODE_1227_VALUE);
@@ -308,7 +320,7 @@ public class UserService {
         if (Objects.isNull(code)) {
             throw new ServiceException(ResConstants.HTTP_RES_CODE_1228, ResConstants.HTTP_RES_CODE_1228_VALUE);
         } else {
-            userMapper.updateMobile(userId,userInputDTO.getMobile());
+            userMapper.updateMobile(userId, userInputDTO.getMobile());
             User user = userMapper.queryUserByMobile(userInputDTO.getMobile());
             redisService.set(RedisConstants.USERINFO + user.getId(), JSONObject.toJSONString(user, SerializerFeature.WriteNullStringAsEmpty));
         }

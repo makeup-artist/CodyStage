@@ -22,7 +22,7 @@ public class UserOutDTO {
     @ApiModelProperty(value = "性别", notes = "0为男，1为女")
     private Integer gender;
     @ApiModelProperty(value = "手机号码")
-    private Integer mobile;
+    private String mobile;
     @ApiModelProperty(value = "年龄")
     private Integer age;
     @ApiModelProperty(value = "昵称")
