@@ -1,8 +1,11 @@
 package com.cody.codystage.mapper;
 
 import com.cody.codystage.bean.dto.in.UserUpdateDTO;
+import com.cody.codystage.bean.dto.out.UserOutDTO;
 import org.apache.ibatis.annotations.*;
 import com.cody.codystage.bean.po.User;
+
+import java.util.List;
 
 /**
  * @Classname UserMapper
@@ -41,4 +44,7 @@ public interface UserMapper {
 
     @Select("select * from `user` where mobile=#{mobile}")
     User queryUserByMobile(@Param("mobile") String mobile);
+
+
+    List<UserOutDTO> queryUserInfoByList(@Param("idList") List<Long> idList);
 }

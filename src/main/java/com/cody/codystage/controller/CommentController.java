@@ -39,7 +39,7 @@ public class CommentController extends BaseApiService<Object> {
 
     @PostMapping("/add")
     @ApiOperation(value = "添加评论 (token yes)")
-    public BaseResponse<Object> addComment(@Valid CommentAddInDTO commentAddInDTO, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response) {
+    public BaseResponse<Object> addComment(@RequestBody @Valid CommentAddInDTO commentAddInDTO, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response) {
         commonService.checkDto(bindingResult);
 
         Comment comment = CodyBeanUtils.beanCopyPropertoes(commentAddInDTO, Comment.class);

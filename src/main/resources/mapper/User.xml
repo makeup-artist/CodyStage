@@ -3,7 +3,7 @@
 <mapper namespace="com.cody.codystage.mapper.UserMapper">
 
     <sql id="Base_Select_List">
-        id,username,password,age,nickname,picture,description,updateTime,createTime,isAvailable,gender,tag,mobile,email
+        id,username,age,nickname,picture,description,updateTime,createTime,isAvailable,gender,tag,mobile,email,role
     </sql>
 
     <select id="queryUserByName" resultType="com.cody.codystage.bean.po.User" parameterType="string">
@@ -14,5 +14,15 @@
     <select id="queryUserById" resultType="com.cody.codystage.bean.po.User" parameterType="Long">
         select * from user
         where id=#{id}
+    </select>
+
+    <select id="queryUserInfoByList" resultType="com.cody.codystage.bean.dto.out.UserOutDTO" parameterType="java.util.List">
+        select * from user
+        <if test="idList!= null">
+            where id in
+            <foreach collection="idList" item="item" open="(" close=")"  separator=",">
+                #{item}
+            </foreach>
+        </if>
     </select>
 </mapper>

@@ -10,10 +10,7 @@ import com.cody.codystage.utils.RequestUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -70,7 +67,7 @@ public class GoodsController extends BaseApiService<Object> {
 
     @PostMapping(value = "/detail/list")
     @ApiOperation(value = "获取商品详情，包括商品详细信息和图片列表")
-    public BaseResponse<Object> getGoodsDetailByList(@Valid GoodsListInDTO goodsListInDTO, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response) {
+    public BaseResponse<Object> getGoodsDetailByList(@RequestBody  @Valid GoodsListInDTO goodsListInDTO, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response) {
         commonService.checkDto(bindingResult);
 
         List<Integer> goodsIdList = goodsListInDTO.getGoodsList();

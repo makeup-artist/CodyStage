@@ -8,18 +8,16 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
- * @Classname VideoInfoListInDTO
+ * @Classname UserIdListInDto
  * @Description TODO
- * @Date 2019/5/20 0:16
+ * @Date 2019/6/2 21:31
  * @Created by ZQ
  */
 @Data
-@ApiModel(value = "批量查询视频信息")
-public class VideoInfoListInDTO {
+@ApiModel(value = "批量查询用户信息")
+public class UserIdListInDto {
 
-    @ApiModelProperty(value = "视频id列表",required=true)
+    @ApiModelProperty(value = "用户id列表", required = true)
     @NotNull
-    List<Integer> videoList;
-
-    String asd;
+    List<Long> idList;
 }

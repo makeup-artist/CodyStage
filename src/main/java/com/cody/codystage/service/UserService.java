@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -193,7 +194,7 @@ public class UserService {
             jsonObject = JSON.parseObject(response.getData());
             if ("OK".equals(jsonObject.get("Code"))) {
                 redisService.set(key, num, 5 * 60);
-            }else{
+            } else {
                 throw new ServiceException(ResConstants.HTTP_RES_CODE_400, (String) jsonObject.get("Message"));
             }
         }
@@ -249,8 +250,8 @@ public class UserService {
         return userInfo;
     }
 
-    public Map<String,Object> login(UserLoginDTO userLoginDTO) {
-        Map<String,Object> resMap=Maps.newHashMap();
+    public Map<String, Object> login(UserLoginDTO userLoginDTO) {
+        Map<String, Object> resMap = Maps.newHashMap();
 
         String password = userLoginDTO.getPassword();
         userLoginDTO.setPassword(MD5Util.getSaltMD5(password, salt));
@@ -309,7 +310,7 @@ public class UserService {
         }
     }
 
-    public void updateMobile(UserRegisterCodeInDTO userInputDTO, Long userId) {
+    public void updateMobile(UserLoginCodeInDTO userInputDTO, Long userId) {
 
         if (!checkMobileRepeat(userInputDTO.getMobile())) {
             throw new ServiceException(ResConstants.HTTP_RES_CODE_1226, ResConstants.HTTP_RES_CODE_1226_VALUE);
@@ -324,6 +325,12 @@ public class UserService {
             User user = userMapper.queryUserByMobile(userInputDTO.getMobile());
             redisService.set(RedisConstants.USERINFO + user.getId(), JSONObject.toJSONString(user, SerializerFeature.WriteNullStringAsEmpty));
         }
+    }
+
+    public List<UserOutDTO> getUserInfoByList(UserIdListInDto userIdListInDto) {
+
+        return userMapper.queryUserInfoByList(userIdListInDto.getIdList());
+
     }
 
     /**

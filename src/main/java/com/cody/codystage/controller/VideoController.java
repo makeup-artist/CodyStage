@@ -37,7 +37,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/api/video")
-@Api(tags = "视频API")
+@Api(tags = "视频API",value = "/api/video")
 public class VideoController extends BaseApiService<Object> {
 
     @Resource
@@ -49,7 +49,7 @@ public class VideoController extends BaseApiService<Object> {
 
     @PostMapping("/add")
     @ApiOperation(value = "上传视频 (token yes)")
-    public BaseResponse<Object> addPost(@Valid VideoAddInDTO videoAddInDTO, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response){
+    public BaseResponse<Object> addPost( @RequestBody @Valid VideoAddInDTO videoAddInDTO, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response){
         HashMap<Object, Object> resMap = Maps.newHashMap();
 
         commonService.checkDto(bindingResult);
@@ -69,7 +69,7 @@ public class VideoController extends BaseApiService<Object> {
 
     @PutMapping("/update")
     @ApiOperation(value = "修改视频 (token yes)")
-    public BaseResponse<Object> updatePost(@Valid VideoUpdateInDTO videoUpdateInDTO, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response){
+    public BaseResponse<Object> updatePost(@RequestBody @Valid VideoUpdateInDTO videoUpdateInDTO, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response){
         commonService.checkDto(bindingResult);
 
         Video video = CodyBeanUtils.beanCopyPropertoes(videoUpdateInDTO, Video.class);
@@ -150,7 +150,7 @@ public class VideoController extends BaseApiService<Object> {
 
     @PostMapping(value = "/getByList")
     @ApiOperation(value = "通过视频id的列表得到视频的信息")
-    public BaseResponse<Object> getVideoByList(@Valid VideoInfoListInDTO videoInfoListInDTO, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response){
+    public BaseResponse<Object> getVideoByList(@RequestBody @Valid VideoInfoListInDTO videoInfoListInDTO, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response){
         commonService.checkDto(bindingResult);
 
         List<Video> videos = videoService.selectVideoByList(videoInfoListInDTO.getVideoList());

@@ -38,6 +38,9 @@ public interface ResConstants {
     String HTTP_RES_CODE_1228_VALUE = "验证码不存在或已过期";
     String HTTP_RES_CODE_1229_VALUE = "用户已收藏";
     String HTTP_RES_CODE_1230_VALUE = "用户未收藏";
+    String HTTP_RES_CODE_1231_VALUE = "用户已关注";
+    String HTTP_RES_CODE_1232_VALUE = "不能关注自己";
+    String HTTP_RES_CODE_1233_VALUE = "用户未关注";
 
     Integer HTTP_RES_CODE_200 = 200;
     Integer HTTP_RES_CODE_500 = 500;
@@ -74,4 +77,7 @@ public interface ResConstants {
     Integer HTTP_RES_CODE_1228 = 1228;
     Integer HTTP_RES_CODE_1229 = 1229;
     Integer HTTP_RES_CODE_1230 = 1230;
+    Integer HTTP_RES_CODE_1231 = 1231;
+    Integer HTTP_RES_CODE_1232 = 1232;
+    Integer HTTP_RES_CODE_1233 = 1233;
 }

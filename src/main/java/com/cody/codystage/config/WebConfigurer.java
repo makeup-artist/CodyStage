@@ -1,6 +1,7 @@
 package com.cody.codystage.config;
 
 
+import com.cody.codystage.interceptor.AuthorityInterceptor;
 import com.cody.codystage.interceptor.CrossDomainInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.MultipartConfigFactory;
@@ -11,6 +12,7 @@ import org.springframework.util.unit.DataUnit;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import javax.annotation.Resource;
 import javax.servlet.MultipartConfigElement;
 
 @Configuration
@@ -18,9 +20,15 @@ public class WebConfigurer implements WebMvcConfigurer {
 
     @Autowired
     private CrossDomainInterceptor crossDomainInterceptor;
+
+    @Resource
+    private AuthorityInterceptor authorityInterceptor;
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(crossDomainInterceptor).addPathPatterns("/**");
+//        registry.addInterceptor(authorityInterceptor).addPathPatterns("/**")
+//                .excludePathPatterns("/api/user/code","/api/user/login","/api/user/login/code","/api/user/register/code","/api/user/register/tradition","/swagger-ui**","/api/swagger-ui**");
     }
 
     @Bean

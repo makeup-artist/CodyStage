@@ -45,7 +45,7 @@ public class PostController extends BaseApiService<Object> {
 
     @PostMapping("/add")
     @ApiOperation(value = "上传帖子 (token yes)")
-    public BaseResponse<Object> addPost(@Valid PostAddInDTO postAddInDTO, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response) {
+    public BaseResponse<Object> addPost(@RequestBody @Valid PostAddInDTO postAddInDTO, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response) {
         HashMap<Object, Object> resMap = Maps.newHashMap();
         commonService.checkDto(bindingResult);
 
@@ -64,7 +64,7 @@ public class PostController extends BaseApiService<Object> {
 
     @PutMapping("/update")
     @ApiOperation(value = "修改帖子 (token yes)")
-    public BaseResponse<Object> updatePost(@Valid PostUpdateInDTO postUpdateInDTO, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response) {
+    public BaseResponse<Object> updatePost(@RequestBody @Valid PostUpdateInDTO postUpdateInDTO, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response) {
         commonService.checkDto(bindingResult);
 
         Post post = CodyBeanUtils.beanCopyPropertoes(postUpdateInDTO, Post.class);
@@ -144,7 +144,7 @@ public class PostController extends BaseApiService<Object> {
 
     @PostMapping(value = "/getByList")
     @ApiOperation(value = "通过帖子id的列表得到帖子的信息")
-    public BaseResponse<Object> getPostByList(@Valid PostInfoListInDTO postInfoListInDTO, BindingResult bindingResult,HttpServletRequest request, HttpServletResponse response){
+    public BaseResponse<Object> getPostByList(@RequestBody @Valid PostInfoListInDTO postInfoListInDTO, BindingResult bindingResult,HttpServletRequest request, HttpServletResponse response){
         commonService.checkDto(bindingResult);
 
         List<Post> posts = postService.selectPostByList(postInfoListInDTO.getPostList());
