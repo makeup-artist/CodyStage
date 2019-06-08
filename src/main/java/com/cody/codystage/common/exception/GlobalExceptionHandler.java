@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
 
@@ -36,7 +38,7 @@ public class GlobalExceptionHandler extends BaseApiService<JSONObject> {
     }
 
     @ExceptionHandler(Exception.class)
-    public Map<String, Object> handleException(Exception e) {
+    public void handleException(HttpServletResponse response, Exception e) {
         //错误信息打入kafka
         JSONObject errorJson = new JSONObject();
         JSONObject logJson = new JSONObject();
@@ -45,35 +47,45 @@ public class GlobalExceptionHandler extends BaseApiService<JSONObject> {
         errorJson.put("request_error", logJson);
 //        kafkaSender.send(errorJson);
 
-        Map<String, Object> resMap = Maps.newHashMap();
-        resMap.put("code", ResConstants.HTTP_RES_CODE_500);
-        resMap.put("msg", ResConstants.HTTP_RES_CODE_500_VALUE);
-
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("code", ResConstants.HTTP_RES_CODE_500);
+        jsonObject.put("msg", ResConstants.HTTP_RES_CODE_500_VALUE);
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json; charset=utf-8");
+        response.setStatus(ResConstants.HTTP_RES_CODE_500);
+        try (PrintWriter writer = response.getWriter()) {
+            writer.print(jsonObject);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
         log.info("全局捕获异常", e);
-        return resMap;
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public BaseResponse<JSONObject> validationBodyException(MethodArgumentNotValidException exception) {
+    public void validationBodyException(HttpServletResponse response, MethodArgumentNotValidException exception) {
 
         BindingResult result = exception.getBindingResult();
         if (result.hasErrors()) {
             List<ObjectError> errors = result.getAllErrors();
             errors.forEach(p -> {
                 FieldError fieldError = (FieldError) p;
-                log.error("Data check failure : object{" + fieldError.getObjectName() + "},field{" + fieldError.getField() +
+                log.info("Data check failure : object{" + fieldError.getObjectName() + "},field{" + fieldError.getField() +
                         "},errorMessage{" + fieldError.getDefaultMessage() + "}");
             });
 
         }
-        return setResultError(HttpServletResponse.SC_BAD_REQUEST, "参数错误");
-    }
 
-
-    @ExceptionHandler(HttpMessageConversionException.class)
-    public BaseResponse<JSONObject> parameterTypeException(HttpMessageConversionException exception) {
-        log.error(exception.getCause().getLocalizedMessage());
-        return setResultError(HttpServletResponse.SC_BAD_REQUEST, "类型转换错误");
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("code", ResConstants.HTTP_RES_CODE_400);
+        jsonObject.put("msg", "参数类型错误");
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json; charset=utf-8");
+        response.setStatus(ResConstants.HTTP_RES_CODE_400);
+        try (PrintWriter writer = response.getWriter()) {
+            writer.print(jsonObject);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
 }

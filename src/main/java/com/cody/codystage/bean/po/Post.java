@@ -1,6 +1,9 @@
 package com.cody.codystage.bean.po;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
 
@@ -11,6 +14,9 @@ import java.sql.Timestamp;
  * @Created by ZQ
  */
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Post {
 
     private int id;
