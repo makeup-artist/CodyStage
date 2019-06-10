@@ -28,7 +28,7 @@ public class WebConfigurer implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(crossDomainInterceptor).addPathPatterns("/**");
         registry.addInterceptor(authorityInterceptor).addPathPatterns("/**")
-                .excludePathPatterns("/api/user/code","/api/user/login","/api/user/login/code","/api/user/register/code","/api/user/register/tradition","/swagger-ui.html/**","/swagger-resources/**","/v2/**","/swagger-ui.html#!/**","/swagger-resources/**");
+                .excludePathPatterns("/api/user/userInfo**","/api/user/check**","/api/user/code","/api/user/login","/api/user/login/code","/api/user/register/code","/api/user/register/tradition","/swagger-resources/**", "/webjars/**", "/v2/**", "/swagger-ui.html/**");
     }
 
     @Bean
