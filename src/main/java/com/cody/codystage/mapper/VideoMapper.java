@@ -21,7 +21,7 @@ public interface VideoMapper {
     @Select("select * from `video` where id = #{id}")
     Map<String,Object> selectVideo(@Param("id") int id);
 
-    @Update("update `video` set url=#{url},title=#{title} where id=#{id} and author=#{author}")
+    @Update("update `video` set url=#{url},title=#{title},cover=#{cover} where id=#{id} and author=#{author}")
     int updateVideo(Video video);
 
     @Delete("delete from `video` where id=#{id} and author=#{author}")

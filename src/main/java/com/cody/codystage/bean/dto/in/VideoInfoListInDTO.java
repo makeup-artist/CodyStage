@@ -20,6 +20,4 @@ public class VideoInfoListInDTO {
     @ApiModelProperty(value = "视频id列表",required=true)
     @NotNull
     List<Integer> videoList;
-
-    String asd;
 }

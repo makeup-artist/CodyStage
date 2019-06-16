@@ -3,7 +3,7 @@
 <mapper namespace="com.cody.codystage.mapper.VideoMapper">
 
     <insert id="addVideo" parameterType="com.cody.codystage.bean.po.Video"  useGeneratedKeys="true" keyProperty="id">
-        insert into `video`(author,url,title,star) values(#{author},#{url},#{title},#{star})
+        insert into `video`(author,url,title,star,cover) values(#{author},#{url},#{title},#{star},#{cover})
     </insert>
 
     <select id="selectVideoByList" parameterType="java.util.List" resultType="com.cody.codystage.bean.po.Video">
